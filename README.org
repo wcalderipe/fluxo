@@ -1,0 +1,3 @@
+* fluxo
+
+A recreational decentralized-application to stream money in the Ethereum blockchain.
