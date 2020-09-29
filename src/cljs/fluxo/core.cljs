@@ -3,7 +3,8 @@
             [re-frame.core :as re-frame]
             [fluxo.events :as events]
             [fluxo.views :as views]
-            [fluxo.config :as config]))
+            [fluxo.config :as config]
+            [fluxo.routes :as routes]))
 
 (defn dev-setup []
   (when config/debug?
@@ -17,5 +18,6 @@
 
 (defn init []
   (re-frame/dispatch-sync [::events/initialize-db])
+  (routes/app-routes)
   (dev-setup)
   (mount-root))

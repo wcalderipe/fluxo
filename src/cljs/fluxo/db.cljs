@@ -1,4 +1,3 @@
 (ns fluxo.db)
 
-(def default-db
-  {:name "re-frame"})
+(def default-db {:active-panel :home-panel})
