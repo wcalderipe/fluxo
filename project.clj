@@ -75,6 +75,7 @@
             "karma"        ["do"
                             ["shell" "echo" "\"DEPRECATED: Please use lein ci instead.\""]
                             ["ci"]]
+
             "ci"           ["with-profile" "prod" "do"
                             ["shadow" "compile" "karma-test"]
                             ["shell" "karma" "start" "--single-run" "--reporters" "junit,dots"]]}
