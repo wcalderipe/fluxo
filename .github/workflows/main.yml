@@ -1,4 +1,4 @@
-name: CI
+name: CD
 
 on:
   push:
@@ -29,3 +29,30 @@ jobs:
 
       - name: Test
         run: npx karma start --single-run
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: compiled-app
+          path: resources/public
+
+  deploy:
+    name: Deploy to Firebase
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Download artifacts
+        uses: actions/download-artifact@master
+        with:
+          name: compiled-app
+          path: resources/public
+
+      - name: Deploy
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
