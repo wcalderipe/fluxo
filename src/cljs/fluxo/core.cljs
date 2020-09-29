@@ -1,12 +1,9 @@
 (ns fluxo.core
-  (:require
-   [reagent.dom :as rdom]
-   [re-frame.core :as re-frame]
-   [fluxo.events :as events]
-   [fluxo.views :as views]
-   [fluxo.config :as config]
-   ))
-
+  (:require [reagent.dom :as rdom]
+            [re-frame.core :as re-frame]
+            [fluxo.events :as events]
+            [fluxo.views :as views]
+            [fluxo.config :as config]))
 
 (defn dev-setup []
   (when config/debug?

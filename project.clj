@@ -9,23 +9,23 @@
                  [re-frame "1.1.1"]]
 
   :plugins [[lein-shadow "0.3.1"]
-            
             [lein-shell "0.5.0"]]
 
   :min-lein-version "2.9.0"
 
   :jvm-opts ["-Xmx1G"]
 
-  :source-paths ["src/clj" "src/cljs"]
+  :source-paths ["src/clj"
+                 "src/cljs"]
 
   :test-paths   ["test/cljs"]
 
-  :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"
+  :clean-targets ^{:protect false} ["resources/public/js/compiled"
+                                    "target"
                                     "test/js"]
 
-
   :shadow-cljs {:nrepl {:port 8777}
-                
+
                 :builds {:app {:target :browser
                                :output-dir "resources/public/js/compiled"
                                :asset-path "/js/compiled"
@@ -33,28 +33,27 @@
                                                :preloads [devtools.preload]}}
 
                                :devtools {:http-root "resources/public"
-                                          :http-port 8280
-                                          }}
-                         :browser-test
-                         {:target :browser-test
-                          :ns-regexp "-test$"
-                          :runner-ns shadow.test.browser
-                          :test-dir "target/browser-test"
-                          :devtools {:http-root "target/browser-test"
-                                     :http-port 8290}}
+                                          :http-port 8280}}
 
-                         :karma-test
-                         {:target :karma
-                          :ns-regexp "-test$"
-                          :output-to "target/karma-test.js"}}}
-  
+                         :browser-test {:target :browser-test
+                                        :ns-regexp "-test$"
+                                        :runner-ns shadow.test.browser
+                                        :test-dir "target/browser-test"
+                                        :devtools {:http-root "target/browser-test"
+                                                   :http-port 8290}}
+
+                         :karma-test {:target :karma
+                                      :ns-regexp "-test$"
+                                      :output-to "target/karma-test.js"}}}
+
   :shell {:commands {"karma" {:windows         ["cmd" "/c" "karma"]
                               :default-command "karma"}
+
                      "open"  {:windows         ["cmd" "/c" "start"]
                               :macosx          "open"
                               :linux           "xdg-open"}}}
 
-  :aliases {"dev"          ["do" 
+  :aliases {"dev"          ["do"
                             ["shell" "echo" "\"DEPRECATED: Please use lein watch instead.\""]
                             ["watch"]]
             "watch"        ["with-profile" "dev" "do"
@@ -78,13 +77,9 @@
                             ["shadow" "compile" "karma-test"]
                             ["shell" "karma" "start" "--single-run" "--reporters" "junit,dots"]]}
 
-  :profiles
-  {:dev
-   {:dependencies [[binaryage/devtools "1.0.2"]]
-    :source-paths ["dev"]}
+  :profiles {:dev {:dependencies [[binaryage/devtools "1.0.2"]]
+                   :source-paths ["dev"]}
 
-   :prod {}
-   
-}
+             :prod {}}
 
   :prep-tasks [])
