@@ -17,10 +17,16 @@
 
 (def url-for (partial path-for routes))
 
-(reg-event-db :routes/set-active-panel
-              (fn [db [_ panel]]
-                (assoc db :active-panel panel)))
+(defn set-active-panel-handler
+  "Handler to set the value of :active-panel in the db."
+  [db [_ panel]]
+  (assoc db :active-panel panel))
 
-(reg-sub :routes/active-panel
- (fn [db]
-   (:active-panel db)))
+(reg-event-db :routes/set-active-panel set-active-panel-handler)
+
+(defn get-active-panel
+  "Get the active panel from the db."
+  [db]
+  (:active-panel db))
+
+(reg-sub :routes/active-panel get-active-panel)
