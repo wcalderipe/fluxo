@@ -1,8 +1,8 @@
 (ns fluxo.core
   (:require [reagent.dom :as rdom]
             [re-frame.core :as re-frame]
-            [fluxo.events :as events]
             [fluxo.views :as views]
+            [fluxo.db :as db]
             [fluxo.config :as config]
             [fluxo.routes :as routes]))
 
@@ -17,7 +17,7 @@
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
-  (re-frame/dispatch-sync [::events/initialize-db])
+  (re-frame/dispatch-sync [:db/initialize])
   (routes/app-routes)
   (dev-setup)
   (mount-root))
