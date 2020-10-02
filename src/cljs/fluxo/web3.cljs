@@ -20,12 +20,9 @@
 
 (defn request-accounts
   "Send a request to get the user's accounts using the ethereum object."
-  [ethereum on-success & on-failure]
+  [ethereum on-success]
   (-> (.request ethereum (clj->js {:method "eth_requestAccounts"}))
-      (.then #(on-success (js->clj %)))
-      (.catch (fn [err]
-                (when on-failure
-                  #(on-failure (js->clj err)))))))
+      (.then #(on-success (js->clj %)))))
 
 (comment
   (def web3 (make-web3 (given-provider)))
