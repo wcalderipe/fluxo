@@ -22,11 +22,15 @@
   [db [_ panel]]
   (assoc db :active-panel panel))
 
-(reg-event-db :routes/set-active-panel set-active-panel-handler)
+(reg-event-db
+ :routes/set-active-panel
+ set-active-panel-handler)
 
 (defn get-active-panel
   "Get the active panel from the db."
   [db]
   (:active-panel db))
 
-(reg-sub :routes/active-panel get-active-panel)
+(reg-sub
+ :routes/active-panel
+ get-active-panel)
