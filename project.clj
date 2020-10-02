@@ -5,7 +5,7 @@
                                org.clojure/google-closure-library
                                org.clojure/google-closure-library-third-party]]
                  [thheller/shadow-cljs "2.11.4"]
-                 [reagent "0.10.0"]
+                 [reagent "1.0.0-alpha2"]
                  [re-frame "1.1.1"]
                  [bidi "2.1.6"]
                  [kibu/pushy "0.3.8"]]
