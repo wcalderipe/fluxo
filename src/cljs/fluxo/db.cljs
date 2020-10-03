@@ -1,7 +1,7 @@
 (ns fluxo.db
   (:require [re-frame.core :refer [reg-event-db reg-sub]]))
 
-(def default-db {:active-panel :home-panel
+(def default-db {:routes {:active :home}
                  :wallet {:address nil}})
 
 (reg-event-db

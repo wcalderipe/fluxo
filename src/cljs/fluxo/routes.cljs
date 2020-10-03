@@ -3,11 +3,11 @@
             [pushy.core :refer [pushy start!]]
             [re-frame.core :refer [dispatch reg-event-db reg-sub]]))
 
-(def routes ["/" {"" :home}])
+(def routes ["/" {"" :home
+                  "recipient" {"" :create-stream/recipient}}])
 
 (defn- dispatch-route [matched-route]
-  (let [panel-name (keyword (str (name (:handler matched-route)) "-panel"))]
-    (dispatch [:routes/set-active-panel panel-name])))
+  (dispatch [:routes/redirect-to (:handler matched-route)]))
 
 (defn- parse-url [url]
   (match-route routes url))
@@ -15,22 +15,23 @@
 (defn app-routes []
   (start! (pushy dispatch-route parse-url)))
 
-(def url-for (partial path-for routes))
+(defn url-for [route]
+  (path-for routes route))
 
-(defn set-active-panel-handler
+(defn redirect-to-handler
   "Handler to set the value of :active-panel in the db."
   [db [_ panel]]
-  (assoc db :active-panel panel))
+  (assoc-in db [:routes :active] panel))
 
 (reg-event-db
- :routes/set-active-panel
- set-active-panel-handler)
+ :routes/redirect-to
+ redirect-to-handler)
 
-(defn get-active-panel
+(defn get-active-route-handler
   "Get the active panel from the db."
   [db]
-  (:active-panel db))
+  (get-in db [:routes :active]))
 
 (reg-sub
- :routes/active-panel
- get-active-panel)
+ :routes/active
+ get-active-route-handler)

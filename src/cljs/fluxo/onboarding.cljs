@@ -1,5 +1,6 @@
 (ns fluxo.onboarding
   (:require [fluxo.wallet :refer [mask-address]]
+            [fluxo.routes :refer [url-for]]
             [re-frame.core :refer [dispatch subscribe reg-event-fx inject-cofx]]))
 
 (defn connect-your-wallet [{on-click :on-click}]
@@ -12,7 +13,7 @@
                               on-click :on-click}]
   [:div
    [:p "Your connected wallet is " (mask-address wallet-address)]
-   [:button {:on-click on-click} "Create your first stream!"]])
+   [:a {:href (url-for :create-stream/recipient)} "Create your first stream!"]])
 
 (defn onboarding-panel []
   (let [_ (dispatch [:onboarding/fetch-accounts])

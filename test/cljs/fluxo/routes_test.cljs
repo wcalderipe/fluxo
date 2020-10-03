@@ -2,10 +2,10 @@
   (:require [cljs.test :refer-macros [deftest testing is]]
             [fluxo.routes :as routes]))
 
-(deftest test-set-active-panel-handler
+(deftest test-redirect-to-handler
   (testing "sets :active-panel keyword in the db"
-    (is (= {:active-panel :foo} (routes/set-active-panel-handler {} [nil :foo])))))
+    (is (= {:routes {:active :foo}} (routes/redirect-to-handler {} [nil :foo])))))
 
-(deftest test-get-active-panel
+(deftest test-get-active-route-handler
   (testing "gets :active-panel keyword from the db"
-    (is (= :foo (routes/get-active-panel {:active-panel :foo})))))
+    (is (= :foo (routes/get-active-route-handler {:routes {:active :foo}})))))
