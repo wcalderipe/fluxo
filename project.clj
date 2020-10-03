@@ -8,7 +8,9 @@
                  [reagent "1.0.0-alpha2"]
                  [re-frame "1.1.1"]
                  [bidi "2.1.6"]
-                 [kibu/pushy "0.3.8"]]
+                 [kibu/pushy "0.3.8"]
+                 [day8.re-frame/test "0.1.5"]
+                 [prismatic/dommy "1.1.0"]]
 
   :plugins [[lein-shadow "0.3.1"]
             [lein-shell "0.5.0"]]
