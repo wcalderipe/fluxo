@@ -1,10 +1,11 @@
 (ns fluxo.web3
-  (:require ["web3" :as Web3]))
+  (:require ["web3" :as Web3]
+            [re-frame.core :refer [reg-cofx]]))
 
-(defn ethereum
+(defn ethereum!
   "Get the ethereum propery from js/window."
   []
-  (-> js/window .-ethereum))
+  (.-ethereum js/window))
 
 (defn given-provider []
   (-> Web3 .-givenProvider))
@@ -24,7 +25,18 @@
   (-> (.request ethereum (clj->js {:method "eth_requestAccounts"}))
       (.then #(on-success (js->clj %)))))
 
+(defn fetch-accounts
+  [ethereum on-success]
+  (-> (.request ethereum (clj->js {:method "eth_accounts"}))
+      (.then #(on-success (js->clj %)))))
+
+
+(reg-cofx
+ :web3/ethereum
+ (fn [cofx]
+   (assoc cofx :web3/ethereum (ethereum!))))
+
 (comment
   (def web3 (make-web3 (given-provider)))
 
-  (request-accounts (ethereum) #(prn %)))
+  (request-accounts (ethereum!) #(prn %)))
