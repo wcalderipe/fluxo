@@ -50,7 +50,7 @@
 (defn on-amount-submit [_ [_ form-state]]
   {:fx [[:dispatch [:create-stream/add-amount (:amount form-state)]]
         [:dispatch [:create-stream/add-token (:token form-state)]]
-        #_[:dispatch [:routes/redirect-to :home]]]})
+        [:dispatch [:routes/redirect-to :create-stream/duration]]]})
 
 (reg-event-fx
  :create-stream/on-amount-submit
@@ -77,12 +77,26 @@
  :create-stream/amount
  amount)
 
+(reg-sub
+ :create-stream/amount-in-wei
+ (fn []
+   [(subscribe [:create-stream/amount])])
+ (fn [[amount]]
+   (from-wei amount)))
+
 (defn token [db]
   (get-in db [:create-stream :token]))
 
 (reg-sub
  :create-stream/token
  token)
+
+(defn token-symbol [db]
+  (get-in db [:create-stream :token :symbol]))
+
+(reg-sub
+ :create-stream/token-symbol
+ token-symbol)
 
 (defn- find-by-symbol [symbol]
   (fn [{s :symbol}]
@@ -119,3 +133,53 @@
        [:p "How much do you want to sent to " (mask-address @recipient) "?"]
        [amount-form {:assets @assets
                      :amount (from-wei @amount)}]])))
+
+(defn on-duration-submit [_ [_ form-state]]
+  {:fx [[:dispatch [:create-stream/add-duration (:duration form-state)]]
+        #_[:dispatch [:routes/redirect-to :create-stream/amount]]]})
+
+(reg-event-fx
+ :create-stream/on-duration-submit
+ on-duration-submit)
+
+(defn add-duration [db [_ duration]]
+  (assoc-in db [:create-stream :duration] (js/parseFloat duration)))
+
+(reg-event-db
+ :create-stream/add-duration
+ add-duration)
+
+(defn duration[db]
+  (get-in db [:create-stream :duration]))
+
+(reg-sub
+ :create-stream/duration
+ duration)
+
+(defn duration-form [defaults]
+  (let [state (reagent/atom defaults)]
+    (fn []
+      [:form {:on-submit (fn [e]
+                           (.preventDefault e)
+                           (js/console.log @state)
+                           (dispatch [:create-stream/on-duration-submit @state]))}
+       [:div
+        [:input {:type :text
+                 :placeholder "Time in hours"
+                 :value (:duration @state)
+                 :on-change #(swap! state assoc :duration (.. % -target -value))}]]
+       [:div
+        [:input {:type :submit
+                 :value "Continue"}]]])))
+
+(defn duration-step []
+  (let [recipient (subscribe [:create-stream/recipient])
+        token-symbol (subscribe [:create-stream/token-symbol])
+        amount (subscribe [:create-stream/amount-in-wei])
+        duration (subscribe [:create-stream/duration])]
+    (fn []
+      [:div
+       [:p "For how long would you like to stream "
+        @token-symbol " " @amount
+        " to " (mask-address @recipient)]
+       [duration-form {:duration @duration}]])))
