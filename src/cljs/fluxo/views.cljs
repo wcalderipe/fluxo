@@ -15,7 +15,7 @@
 (defmethod panel :create-stream/confirmation [] [confirmation-step])
 
 (defn main-panel []
-  (let [db (subscribe [:db/state])
+  (let [db           (subscribe [:db/state])
         active-route (subscribe [:routes/active])]
     (fn []
       ;; TODO: Remove the debugging log or find a way to use environment

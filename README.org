@@ -5,3 +5,33 @@
 A recreational decentralized-application to stream money in the Ethereum blockchain.
 
 Check it live at https://fluxo-dapp.web.app.
+
+** Getting Started
+
+   #+begin_src shell
+     lein watch
+   #+end_src
+
+   Now in your browser, navigate to =http://localhost:8280=.
+
+** Testing
+
+   I normally run test in the REPL from within Emacs, however you can do it from
+   a command line as well.
+
+   #+begin_src shell
+     lein shadow compile app karma-test
+     npx karma start --single-run
+   #+end_src
+
+** Tooling
+
+*** Linting
+
+    We use [[https://github.com/weavejester/cljfmt][cljfmt]] for format Clojure(Script) code following the
+    [[https://github.com/bbatsov/clojure-style-guide][clojure-style-guide]].
+
+    #+begin_src shell
+      lein cljfmt check
+      lein cljfmt fix
+    #+end_src

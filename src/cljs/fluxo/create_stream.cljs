@@ -1,6 +1,7 @@
 (ns fluxo.create-stream
   (:require [re-frame.core :refer [dispatch reg-event-fx reg-event-db reg-sub subscribe]]
             [reagent.core :as reagent]
+            [ajax.core :refer [json-request-format json-response-format]]
             [fluxo.wallet :refer [mask-address]]
             [fluxo.money :refer [from-wei to-wei]]))
 
@@ -104,7 +105,7 @@
 
 (defn amount-form [{assets :assets
                     amount :amount}]
-  (let [state (reagent/atom {:token (first assets)
+  (let [state (reagent/atom {:token  (first assets)
                              :amount amount})]
     (fn []
       [:form {:on-submit (fn [e]
@@ -112,22 +113,22 @@
                            (dispatch [:create-stream/on-amount-submit @state]))}
        [:div
         [:select {:on-change #(swap! state assoc :token (filter (find-by-symbol (.. % -target -value)) assets))}
-         (for [{token :token
-                name :name
+         (for [{token  :token
+                name   :name
                 symbol :symbol} assets]
            ^{:key (str name symbol)} [:option {:value symbol} name])]]
        [:div
-        [:input {:type :text
-                 :value (:amount @state)
+        [:input {:type      :text
+                 :value     (:amount @state)
                  :on-change #(swap! state assoc :amount (.. % -target -value))}]]
        [:div
-        [:input {:type :submit
+        [:input {:type  :submit
                  :value "Continue"}]]])))
 
 (defn amount-step []
-  (let [assets (subscribe [:wallet/assets])
+  (let [assets    (subscribe [:wallet/assets])
         recipient (subscribe [:create-stream/recipient])
-        amount (subscribe [:create-stream/amount])]
+        amount    (subscribe [:create-stream/amount])]
     (fn []
       [:div
        [:p "How much do you want to sent to " (mask-address @recipient) "?"]
@@ -149,7 +150,7 @@
  :create-stream/add-duration
  add-duration)
 
-(defn duration[db]
+(defn duration [db]
   (get-in db [:create-stream :duration]))
 
 (reg-sub
@@ -164,19 +165,19 @@
                            (js/console.log @state)
                            (dispatch [:create-stream/on-duration-submit @state]))}
        [:div
-        [:input {:type :text
+        [:input {:type        :text
                  :placeholder "Time in hours"
-                 :value (:duration @state)
-                 :on-change #(swap! state assoc :duration (.. % -target -value))}]]
+                 :value       (:duration @state)
+                 :on-change   #(swap! state assoc :duration (.. % -target -value))}]]
        [:div
-        [:input {:type :submit
+        [:input {:type  :submit
                  :value "Continue"}]]])))
 
 (defn duration-step []
-  (let [recipient (subscribe [:create-stream/recipient])
+  (let [recipient    (subscribe [:create-stream/recipient])
         token-symbol (subscribe [:create-stream/token-symbol])
-        amount (subscribe [:create-stream/amount-in-wei])
-        duration (subscribe [:create-stream/duration])]
+        amount       (subscribe [:create-stream/amount-in-wei])
+        duration     (subscribe [:create-stream/duration])]
     (fn []
       [:div
        [:p "For how long would you like to stream "
@@ -192,25 +193,25 @@
  on-confirmation)
 
 (defn confirmation-step []
-  (let [sender (subscribe [:wallet/address])
-        recipient (subscribe [:create-stream/recipient])
-        token (subscribe [:create-stream/token])
-        amount (subscribe [:create-stream/amount])
+  (let [sender        (subscribe [:wallet/address])
+        recipient     (subscribe [:create-stream/recipient])
+        token         (subscribe [:create-stream/token])
+        amount        (subscribe [:create-stream/amount])
         amount-in-wei (subscribe [:create-stream/amount-in-wei])
-        duration (subscribe [:create-stream/duration])]
+        duration      (subscribe [:create-stream/duration])]
     (fn []
       [:div
        [:p "Review your stream"]
        [:ul
-        [:li "From " (mask-address @sender)]
-        [:li "To " (mask-address @recipient)]
-        [:li "Amount " (:symbol @token) " " @amount-in-wei]
+        [:li "From "     (mask-address @sender)]
+        [:li "To "       (mask-address @recipient)]
+        [:li "Amount "   (:symbol @token) " " @amount-in-wei]
         [:li "Duration " @duration " hours"]]
        [:button {:on-click (fn [e]
                              (.preventDefault e)
-                             (dispatch [:create-stream/on-confirmation {:sender @sender
+                             (dispatch [:create-stream/on-confirmation {:sender    @sender
                                                                         :recipient @recipient
-                                                                        :token @token
-                                                                        :amount @amount
-                                                                        :duration @duration}]))}
+                                                                        :token     @token
+                                                                        :amount    @amount
+                                                                        :duration  @duration}]))}
         "Confirm"]])))

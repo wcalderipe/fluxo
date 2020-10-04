@@ -6,7 +6,7 @@
   "Omit address middle characters."
   [address]
   (let [start (apply str (take 5 address))
-        end (apply str (take-last 3 address))]
+        end   (apply str (take-last 3 address))]
     (str start "..." end)))
 
 (reg-sub
@@ -20,8 +20,8 @@
    (get-in db [:wallet :address])))
 
 (defn request-fx [{on-success :on-success
-                   method :method
-                   provider :provider}]
+                   method     :method
+                   provider   :provider}]
   (-> (.request provider (clj->js {:method method}))
       (.then #(dispatch (conj on-success (js->clj % :keywordize-keys true))))))
 
@@ -39,8 +39,8 @@
 
 (defrecord Asset [name symbol address])
 
-(defn add-asset [db [_ {name :name
-                        symbol :symbol
+(defn add-asset [db [_ {name    :name
+                        symbol  :symbol
                         address :address}]]
   (update-in db [:wallet :assets] conj (->Asset name symbol address)))
 

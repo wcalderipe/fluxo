@@ -3,10 +3,10 @@
             [pushy.core :refer [pushy start!]]
             [re-frame.core :refer [dispatch reg-event-db reg-sub]]))
 
-(def routes ["/" {"" :home
-                  "recipient" {"" :create-stream/recipient}
-                  "amount" {"" :create-stream/amount}
-                  "duration" {"" :create-stream/duration}
+(def routes ["/" {""             :home
+                  "recipient"    {"" :create-stream/recipient}
+                  "amount"       {"" :create-stream/amount}
+                  "duration"     {"" :create-stream/duration}
                   "confirmation" {"" :create-stream/confirmation}}])
 
 (defn- dispatch-route [matched-route]

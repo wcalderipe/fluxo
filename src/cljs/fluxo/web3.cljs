@@ -30,7 +30,6 @@
   (-> (.request ethereum (clj->js {:method "eth_accounts"}))
       (.then #(on-success (js->clj %)))))
 
-
 (reg-cofx
  :web3/ethereum
  (fn [cofx]

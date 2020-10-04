@@ -15,8 +15,8 @@
   ;; The catch fn is being called in request-accounts, however the callback
   ;; never get back here for some reason.
   #_(testing "calls on-failure when promise is rejected"
-    (let [fake-ethereum (clj->js {:request #(js/Promise.reject :oh-snap)})]
-      (async done
-             (web3/request-accounts fake-ethereum nil (fn [err]
-                                                        (is (= :oh-snap err))
-                                                        (done)))))))
+      (let [fake-ethereum (clj->js {:request #(js/Promise.reject :oh-snap)})]
+        (async done
+               (web3/request-accounts fake-ethereum nil (fn [err]
+                                                          (is (= :oh-snap err))
+                                                          (done)))))))

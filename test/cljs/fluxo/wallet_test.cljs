@@ -12,7 +12,7 @@
 
 (deftest test-mask-address
   (testing "omits the middle characters"
-      (is (= (wallet/mask-address "0xfoo0000000000000000000000000000000000bar") "0xfoo...bar"))))
+    (is (= (wallet/mask-address "0xfoo0000000000000000000000000000000000bar") "0xfoo...bar"))))
 
 (defn make-fake-provider
   "Make a fake Ethereum provider object within a request method resolving a

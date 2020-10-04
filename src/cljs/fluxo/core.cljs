@@ -1,6 +1,7 @@
 (ns fluxo.core
   (:require [reagent.dom :as rdom]
             [re-frame.core :as re-frame]
+            [day8.re-frame.http-fx]
             [fluxo.views :as views]
             [fluxo.db :as db]
             [fluxo.config :as config]

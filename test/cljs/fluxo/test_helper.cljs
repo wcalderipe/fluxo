@@ -5,7 +5,7 @@
             [re-frame.core :as rf]))
 
 (def client? (not (nil? (try (.-document js/window)
-                              (catch js/Object e nil)))))
+                             (catch js/Object e nil)))))
 
 (def rflush reagent/flush)
 

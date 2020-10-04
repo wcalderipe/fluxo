@@ -4,16 +4,20 @@
                   :exclusions [com.google.javascript/closure-compiler-unshaded
                                org.clojure/google-closure-library
                                org.clojure/google-closure-library-third-party]]
-                 [thheller/shadow-cljs "2.11.4"]
-                 [reagent "1.0.0-alpha2"]
-                 [re-frame "1.1.1"]
                  [bidi "2.1.6"]
+                 [cljs-ajax "0.8.1"]
+                 [day8.re-frame/http-fx "0.2.1"]
                  [kibu/pushy "0.3.8"]
-                 [day8.re-frame/test "0.1.5"]
-                 [prismatic/dommy "1.1.0"]]
+                 [prismatic/dommy "1.1.0"]
+                 [re-frame "1.1.1"]
+                 [reagent "1.0.0-alpha2"]
+                 [thheller/shadow-cljs "2.11.4"]
+
+                 [day8.re-frame/test "0.1.5"]]
 
   :plugins [[lein-shadow "0.3.1"]
-            [lein-shell "0.5.0"]]
+            [lein-shell "0.5.0"]
+            [lein-cljfmt "0.7.0"]]
 
   :min-lein-version "2.9.0"
 
@@ -30,32 +34,32 @@
 
   :shadow-cljs {:nrepl {:port 8777}
 
-                :builds {:app {:target :browser
+                :builds {:app {:target     :browser
                                :output-dir "resources/public/js/compiled"
                                :asset-path "/js/compiled"
-                               :modules {:app {:init-fn fluxo.core/init
-                                               :preloads [devtools.preload]}}
+                               :modules    {:app {:init-fn  fluxo.core/init
+                                                  :preloads [devtools.preload]}}
 
                                :devtools {:http-root "resources/public"
                                           :http-port 8280}}
 
-                         :browser-test {:target :browser-test
+                         :browser-test {:target    :browser-test
                                         :ns-regexp "-test$"
                                         :runner-ns shadow.test.browser
-                                        :test-dir "target/browser-test"
-                                        :devtools {:http-root "target/browser-test"
-                                                   :http-port 8290}}
+                                        :test-dir  "target/browser-test"
+                                        :devtools  {:http-root "target/browser-test"
+                                                    :http-port 8290}}
 
-                         :karma-test {:target :karma
+                         :karma-test {:target    :karma
                                       :ns-regexp "-test$"
                                       :output-to "target/karma-test.js"}}}
 
   :shell {:commands {"karma" {:windows         ["cmd" "/c" "karma"]
                               :default-command "karma"}
 
-                     "open"  {:windows         ["cmd" "/c" "start"]
-                              :macosx          "open"
-                              :linux           "xdg-open"}}}
+                     "open" {:windows ["cmd" "/c" "start"]
+                             :macosx  "open"
+                             :linux   "xdg-open"}}}
 
   :aliases {"dev"          ["do"
                             ["shell" "echo" "\"DEPRECATED: Please use lein watch instead.\""]
