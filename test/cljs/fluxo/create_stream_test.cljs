@@ -21,17 +21,28 @@
          token (rf/subscribe [:create-stream/token])
          active-route (rf/subscribe [:routes/active])]
 
-     (rf/dispatch [:create-stream/on-amount-submit {:amount "299999999999999980800"
+     (rf/dispatch [:create-stream/on-amount-submit {:amount "200"
                                                     :token asset}])
 
-     (is (= "299999999999999980800" @amount))
-     (is (= asset @token)))))
+     (testing "converts amount from wei to ether"
+       (is (= "200000000000000000000" @amount)))
+
+     (testing "adds token into the database"
+       (is (= asset @token))))))
 
 (deftest amount-step-test
   (run-test-sync
    (rf/dispatch [:db/initialize])
    (rf/dispatch [:create-stream/add-recipient "0xfoo111bar"])
 
-   (with-mounted-component [create-stream/amount-step]
-     (fn [_ div]
-       (is (found-in #"How much do you want to sent to 0xfoo...bar" div))))))
+   (testing "renders recipient address"
+     (with-mounted-component [create-stream/amount-step]
+       (fn [_ div]
+         (is (found-in #"How much do you want to sent to 0xfoo...bar" div)))))
+
+   (rf/dispatch [:create-stream/add-amount "200000000000000000000"])
+
+   (testing "converts wei amount to a human-readable figure"
+     (with-mounted-component [create-stream/amount-step]
+       (fn [_ div]
+         (is (found-in #"200" div)))))))

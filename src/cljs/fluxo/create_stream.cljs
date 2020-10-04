@@ -1,7 +1,8 @@
 (ns fluxo.create-stream
   (:require [re-frame.core :refer [dispatch reg-event-fx reg-event-db reg-sub subscribe]]
             [reagent.core :as reagent]
-            [fluxo.wallet :refer [mask-address]]))
+            [fluxo.wallet :refer [mask-address]]
+            [fluxo.money :refer [from-wei to-wei]]))
 
 (defn on-recipient-submit [_ [_ form-state]]
   {:fx [[:dispatch [:create-stream/add-recipient (:address form-state)]]
@@ -56,7 +57,7 @@
  on-amount-submit)
 
 (defn add-amount [db [_ amount]]
-  (assoc-in db [:create-stream :amount] amount))
+  (assoc-in db [:create-stream :amount] (to-wei amount)))
 
 (reg-event-db
  :create-stream/add-amount
@@ -101,8 +102,10 @@
 
 (defn amount-step []
   (let [assets (subscribe [:wallet/assets])
-        recipient (subscribe [:create-stream/recipient])]
+        recipient (subscribe [:create-stream/recipient])
+        amount (subscribe [:create-stream/amount])]
     (fn []
       [:div
        [:p "How much do you want to sent to " (mask-address @recipient) "?"]
-       [amount-form {:assets @assets}]])))
+       [amount-form {:assets @assets
+                     :amount (from-wei @amount)}]])))
