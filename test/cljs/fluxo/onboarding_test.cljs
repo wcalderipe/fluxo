@@ -1,5 +1,5 @@
 (ns fluxo.onboarding-test
-  (:require [cljs.test :refer-macros [async deftest testing is use-fixtures]]
+  (:require [cljs.test :refer-macros [deftest testing is use-fixtures]]
             [day8.re-frame.test :as rf-test]
             [re-frame.core :as rf]
             [fluxo.test-helper :refer [fixture-re-frame with-mounted-component found-in]]
