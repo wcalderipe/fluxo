@@ -136,7 +136,7 @@
 
 (defn on-duration-submit [_ [_ form-state]]
   {:fx [[:dispatch [:create-stream/add-duration (:duration form-state)]]
-        #_[:dispatch [:routes/redirect-to :create-stream/amount]]]})
+        [:dispatch [:routes/redirect-to :create-stream/confirmation]]]})
 
 (reg-event-fx
  :create-stream/on-duration-submit
@@ -183,3 +183,34 @@
         @token-symbol " " @amount
         " to " (mask-address @recipient)]
        [duration-form {:duration @duration}]])))
+
+(defn on-confirmation [_ [_ stream]]
+  (js/console.log stream))
+
+(reg-event-fx
+ :create-stream/on-confirmation
+ on-confirmation)
+
+(defn confirmation-step []
+  (let [sender (subscribe [:wallet/address])
+        recipient (subscribe [:create-stream/recipient])
+        token (subscribe [:create-stream/token])
+        amount (subscribe [:create-stream/amount])
+        amount-in-wei (subscribe [:create-stream/amount-in-wei])
+        duration (subscribe [:create-stream/duration])]
+    (fn []
+      [:div
+       [:p "Review your stream"]
+       [:ul
+        [:li "From " (mask-address @sender)]
+        [:li "To " (mask-address @recipient)]
+        [:li "Amount " (:symbol @token) " " @amount-in-wei]
+        [:li "Duration " @duration " hours"]]
+       [:button {:on-click (fn [e]
+                             (.preventDefault e)
+                             (dispatch [:create-stream/on-confirmation {:sender @sender
+                                                                        :recipient @recipient
+                                                                        :token @token
+                                                                        :amount @amount
+                                                                        :duration @duration}]))}
+        "Confirm"]])))

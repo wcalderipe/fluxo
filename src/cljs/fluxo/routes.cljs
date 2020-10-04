@@ -6,7 +6,8 @@
 (def routes ["/" {"" :home
                   "recipient" {"" :create-stream/recipient}
                   "amount" {"" :create-stream/amount}
-                  "duration" {"" :create-stream/duration}}])
+                  "duration" {"" :create-stream/duration}
+                  "confirmation" {"" :create-stream/confirmation}}])
 
 (defn- dispatch-route [matched-route]
   (dispatch [:routes/redirect-to (:handler matched-route)]))

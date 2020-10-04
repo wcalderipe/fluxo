@@ -47,7 +47,8 @@
        (fn [_ div]
          (is (found-in #"How much do you want to sent to 0xfoo...bar" div)))))
 
-   ;; The add-amount event converts the value from wei to ether before saving.
+   ;; The add-amount handler converts the value from wei to ether before save
+   ;; it.
    (rf/dispatch [:create-stream/add-amount "200"])
 
    (testing "converts wei amount to a human-readable figure"
@@ -66,7 +67,7 @@
        (is (= 2 @duration)))
 
      (testing "redirects to the confirmation step"
-       (is (= :create-stream/duration @active-route))))))
+       (is (= :create-stream/confirmation @active-route))))))
 
 (deftest duration-step-test
   (run-test-sync
@@ -79,3 +80,20 @@
      (with-mounted-component [create-stream/duration-step]
        (fn [_ div]
          (is (found-in #"FOO 200 to 0xfoo...bar" div)))))))
+
+(deftest confirmation-step-test
+  (run-test-sync
+   (rf/dispatch [:db/initialize])
+   (rf/dispatch [:wallet/accounts-received ["0xbar222foo"]])
+   (rf/dispatch [:create-stream/add-recipient "0xfoo111bar"])
+   (rf/dispatch [:create-stream/add-amount "200"])
+   (rf/dispatch [:create-stream/add-token {:symbol "FOO"}])
+   (rf/dispatch [:create-stream/add-duration 2])
+
+   (testing "renders information collected in previous steps"
+     (with-mounted-component [create-stream/confirmation-step]
+       (fn [_ div]
+         (is (found-in #"From 0xbar...foo" div))
+         (is (found-in #"To 0xfoo...bar" div))
+         (is (found-in #"Amount FOO 200" div))
+         (is (found-in #"Duration 2 hours" div)))))))
