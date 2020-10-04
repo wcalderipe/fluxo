@@ -84,6 +84,10 @@
  :create-stream/token
  token)
 
+(defn- find-by-symbol [symbol]
+  (fn [{s :symbol}]
+    (= s symbol)))
+
 (defn amount-form [{assets :assets
                     amount :amount}]
   (let [state (reagent/atom {:token (first assets)
@@ -92,6 +96,12 @@
       [:form {:on-submit (fn [e]
                            (.preventDefault e)
                            (dispatch [:create-stream/on-amount-submit @state]))}
+       [:div
+        [:select {:on-change #(swap! state assoc :token (filter (find-by-symbol (.. % -target -value)) assets))}
+         (for [{token :token
+                name :name
+                symbol :symbol} assets]
+           ^{:key (str name symbol)} [:option {:value symbol} name])]]
        [:div
         [:input {:type :text
                  :value (:amount @state)
