@@ -4,7 +4,8 @@
             [re-frame.core :refer [dispatch reg-event-db reg-sub]]))
 
 (def routes ["/" {"" :home
-                  "recipient" {"" :create-stream/recipient}}])
+                  "recipient" {"" :create-stream/recipient}
+                  "amount" {"" :create-stream/amount}}])
 
 (defn- dispatch-route [matched-route]
   (dispatch [:routes/redirect-to (:handler matched-route)]))

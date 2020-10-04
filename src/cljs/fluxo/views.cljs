@@ -1,12 +1,13 @@
 (ns fluxo.views
   (:require [re-frame.core :refer [subscribe]]
             [fluxo.onboarding :refer [onboarding-panel]]
-            [fluxo.create-stream :refer [recipient-step]]))
+            [fluxo.create-stream :refer [recipient-step amount-step]]))
 
 (defmulti panel identity)
 
 (defmethod panel :home [] [onboarding-panel])
 (defmethod panel :create-stream/recipient [] [recipient-step])
+(defmethod panel :create-stream/amount [] [amount-step])
 
 (defn main-panel []
   (let [db (subscribe [:db/state])

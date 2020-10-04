@@ -1,5 +1,5 @@
 (ns fluxo.wallet
-  (:require [re-frame.core :refer [reg-sub reg-fx reg-event-fx dispatch]]
+  (:require [re-frame.core :refer [reg-sub reg-fx reg-event-db reg-event-fx dispatch]]
             [fluxo.web3 :as web3]))
 
 (defn mask-address
@@ -36,3 +36,19 @@
 (reg-event-fx
  :wallet/accounts-received
  accounts-received-handler)
+
+(defrecord Asset [name symbol address])
+
+(defn add-asset [db [_ {name :name
+                        symbol :symbol
+                        address :address}]]
+  (update-in db [:wallet :assets] conj (->Asset name symbol address)))
+
+(reg-event-db
+ :wallet/add-asset
+ add-asset)
+
+(reg-sub
+ :wallet/assets
+ (fn [db]
+   (get-in db [:wallet :assets])))
