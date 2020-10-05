@@ -2,6 +2,7 @@
   (:require [reagent.dom :as rdom]
             [re-frame.core :as re-frame]
             [day8.re-frame.http-fx]
+            [fluxo.etherscan]
             [fluxo.views :as views]
             [fluxo.db :as db]
             [fluxo.config :as config]

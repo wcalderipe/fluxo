@@ -18,8 +18,20 @@
      (testing "redirects to the amount step"
        (is (= :create-stream/amount @active-route))))))
 
+(defn- stub-etherscan [{expected-params :expected-params
+                        response :response}]
+  (rf/reg-event-fx
+   :etherscan/get-contract-abi
+   (fn [_ [_ params]]
+     (is (= expected-params params))
+     {:dispatch (conj (:on-success params) response)})))
+
 (deftest amount-form-submit-test
   (run-test-sync
+   (stub-etherscan {:expected-params {:address    "0xfoo111bar"
+                                      :on-success [:create-stream/on-token-contract-success]}
+                    :response        :fake-abi})
+
    (let [asset {:name "Foo" :symbol "FOO" :address "0xfoo111bar"}
          amount (rf/subscribe [:create-stream/amount])
          token (rf/subscribe [:create-stream/token])
@@ -32,7 +44,10 @@
        (is (= "200000000000000000000" @amount)))
 
      (testing "adds token into the database"
-       (is (= asset @token)))
+       (is (= asset (dissoc @token :contract-abi))))
+
+     (testing "fetches the token contract abi from etherscan"
+       (is (= :fake-abi (:contract-abi @token))))
 
      (testing "redirects to the duration step"
        (is (= :create-stream/duration @active-route))))))
