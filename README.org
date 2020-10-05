@@ -6,6 +6,8 @@ A recreational decentralized-application to stream money in the Ethereum blockch
 
 Check it live at https://fluxo-dapp.web.app.
 
+/Important: At the moment, it only supports Ropsten network./
+
 ** Getting Started
 
    #+begin_src shell
