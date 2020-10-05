@@ -2,7 +2,7 @@
   (:require [ajax.core :refer [json-request-format json-response-format]]
             [re-frame.core :refer [reg-event-fx]]))
 
-(def ^:const network-base-url {:ropsten "http://api-ropsten.etherscan.io/api"})
+(def ^:const network-base-url {:ropsten "https://api-ropsten.etherscan.io/api"})
 
 (defn get-contract-abi-handler [_ [_ {address    :address
                                       on-success :on-success}]]
