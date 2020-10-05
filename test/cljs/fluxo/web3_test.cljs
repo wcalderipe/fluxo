@@ -2,7 +2,7 @@
   (:require [cljs.test :refer-macros [deftest testing is async]]
             [fluxo.web3 :as web3]))
 
-(deftest test-request-accounts
+(deftest request-accounts-test
   (testing "calls on-success when promise is resolved"
     (let [fake-ethereum (clj->js {:request #(js/Promise.resolve (clj->js ["0xfoo1bar"]))})]
       (async done
