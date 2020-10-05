@@ -18,7 +18,7 @@
   (.. web3 -eth -Contract))
 
 (defn make-contract [web3 abi address]
-  (new (.. web3 -eth -Contract) abi address))
+  (new (.. web3 -eth -Contract) (clj->js abi) address))
 
 (defn set-contract-provider! [web3 provider]
   (.setProvider (contract-class web3) provider))
@@ -49,12 +49,10 @@
 
 (reg-fx
  :web3/request-approval
- (fn [{:keys [provider token spender-addr
+ (fn [{:keys [provider token-addr token-abi spender-addr
               amount wallet-addr on-success on-failure]}]
    (let [web3       (make-web3 provider)
          _          (set-contract-provider! web3 provider)
-         token-abi  (:contract-abi token)
-         token-addr (:address token)
          token      (make-contract web3 token-abi token-addr)
          tx         (make-approve-tx token spender-addr amount)]
      (-> (.send tx #js{:from wallet-addr})
@@ -105,11 +103,10 @@
      {:web3/request-approval params}))
 
   (dispatch [::request-approval {:provider     (given-provider)
-                                 :token        test-dai-ropsten
+                                 :token-addr   (:address test-dai-ropsten)
+                                 :token-abi    (:contract-abi test-dai-ropsten)
                                  :spender-addr (:address sablier-ropsten)
                                  :wallet-addr  wallet-addr
                                  :amount       (fluxo.money/to-wei "200")
                                  :on-success   [::on-approval-success]
-                                 :on-failure   [::on-approval-failure]}])
-
-  )
+                                 :on-failure   [::on-approval-failure]}]))

@@ -5,6 +5,8 @@
             [fluxo.test-helper :refer [fixture-re-frame with-mounted-component found-in]]
             [fluxo.create-stream :as create-stream]))
 
+(use-fixtures :each (fixture-re-frame))
+
 (deftest recipient-form-submit-test
   (run-test-sync
    (let [recipient (rf/subscribe [:create-stream/recipient])
@@ -52,7 +54,7 @@
      (testing "redirects to the duration step"
        (is (= :create-stream/duration @active-route))))))
 
-(deftest amount-step-test
+(deftest amount-step-view-test
   (run-test-sync
    (rf/dispatch [:db/initialize])
    (rf/dispatch [:create-stream/add-recipient "0xfoo111bar"])
@@ -84,7 +86,7 @@
      (testing "redirects to the confirmation step"
        (is (= :create-stream/confirmation @active-route))))))
 
-(deftest duration-step-test
+(deftest duration-step-view-test
   (run-test-sync
    (rf/dispatch [:db/initialize])
    (rf/dispatch [:create-stream/add-recipient "0xfoo111bar"])
@@ -96,7 +98,45 @@
        (fn [_ div]
          (is (found-in #"FOO 200 to 0xfoo...bar" div)))))))
 
-(deftest confirmation-step-test
+(deftest confirmation-test
+  (run-test-sync
+   (rf/reg-cofx
+    :web3/provider
+    (fn [cofx]
+      (assoc cofx :web3/provider :fake-provider)))
+
+   (rf/reg-fx
+    :web3/request-approval
+    (fn [{:keys [token-addr token-abi
+                 wallet-addr on-success on-failure] :as params}]
+      (is (= "fake-token-addr" token-addr))
+      (is (= :fake-contract-abi token-abi))
+      (is (= "fake-wallet-addr" wallet-addr))
+      (is (= :create-stream/on-spend-approve-success (first on-success)))
+      (is (= :create-stream/on-spend-approve-failure (first on-failure)))
+
+      (rf/dispatch (conj on-success :success))))
+
+   (rf/dispatch [:db/initialize])
+   (rf/dispatch [:wallet/accounts-received ["fake-wallet-addr"]])
+   (rf/dispatch [:create-stream/add-recipient "fake-recipient-addr"])
+   (rf/dispatch [:create-stream/add-amount "200"])
+   (rf/dispatch [:create-stream/add-token {:address "fake-token-addr"}])
+   (rf/dispatch [:create-stream/on-token-contract-success :fake-contract-abi])
+   (rf/dispatch [:create-stream/add-duration 2])
+
+   (let [db (rf/subscribe [:db/state])
+         sender        (rf/subscribe [:wallet/address])
+         recipient     (rf/subscribe [:create-stream/recipient])
+         token         (rf/subscribe [:create-stream/token])
+         amount        (rf/subscribe [:create-stream/amount])
+         duration      (rf/subscribe [:create-stream/duration])]
+
+     (rf/dispatch [:create-stream/on-confirmation {:token  @token
+                                                   :sender @sender
+                                                   :amount @amount}]))))
+
+(deftest confirmation-step-view-test
   (run-test-sync
    (rf/dispatch [:db/initialize])
    (rf/dispatch [:wallet/accounts-received ["0xbar222foo"]])

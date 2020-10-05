@@ -1,9 +1,10 @@
 (ns fluxo.create-stream
-  (:require [re-frame.core :refer [dispatch reg-event-fx reg-event-db reg-sub subscribe]]
-            [reagent.core :as reagent]
-            [ajax.core :refer [json-request-format json-response-format]]
+  (:require-macros [fluxo.resources :refer [inline]])
+  (:require [ajax.core :refer [json-request-format json-response-format]]
+            [fluxo.money :refer [from-wei to-wei]]
             [fluxo.wallet :refer [mask-address]]
-            [fluxo.money :refer [from-wei to-wei]]))
+            [re-frame.core :refer [dispatch inject-cofx reg-event-db reg-event-fx reg-sub subscribe]]
+            [reagent.core :as reagent]))
 
 (defn on-recipient-submit [_ [_ form-state]]
   {:fx [[:dispatch [:create-stream/add-recipient (:address form-state)]]
@@ -58,6 +59,7 @@
 (defn on-amount-submit [_ [_ form-state]]
   {:fx [[:dispatch [:create-stream/add-amount (:amount form-state)]]
         [:dispatch [:create-stream/add-token (:token form-state)]]
+        ;; TODO: Why not an effect instead?
         [:dispatch [:etherscan/get-contract-abi {:address    (get-in form-state [:token :address])
                                                  :on-success [:create-stream/on-token-contract-success]}]]
         [:dispatch [:routes/redirect-to :create-stream/duration]]]})
@@ -194,12 +196,36 @@
         " to " (mask-address @recipient)]
        [duration-form {:duration @duration}]])))
 
-(defn on-confirmation [_ [_ stream]]
-  (js/console.log stream))
+(defonce sablier-ropsten {:address      "0xc04Ad234E01327b24a831e3718DBFcbE245904CC"
+                          :contract-abi (.parse js/JSON (inline "ropsten_sablier-contract-abi.json"))})
 
 (reg-event-fx
  :create-stream/on-confirmation
- on-confirmation)
+ [(inject-cofx :web3/provider)]
+ (fn [cofx [_ {:keys [token sender amount] :as stream}]]
+   {:db                    (assoc (:db cofx) :loading? true)
+
+    :web3/request-approval {:provider     (:web3/provider cofx)
+                            :token-addr   (:address token)
+                            :token-abi    (:contract-abi token)
+                            :spender-addr (:address sablier-ropsten)
+                            :wallet-addr  sender
+                            :amount       amount
+                            :on-success   [:create-stream/on-spend-approve-success stream]
+                            :on-failure   [:create-stream/on-spend-approve-failure]}}))
+
+(reg-event-fx
+ :create-stream/on-spend-approve-success
+ (fn [cofx [_ stream result]]
+   (js/console.log "Spend approved:" result)
+   (js/console.log "Stream:" stream)
+   {:db (assoc (:db cofx) :loading? false)}))
+
+(reg-event-fx
+ :create-stream/on-spend-approve-failure
+ (fn [cofx [_ reason]]
+   (js/console.warn "Spend approval declined by the user:" reason)
+   {:db (assoc (:db cofx) :loading? false)}))
 
 (defn confirmation-step []
   (let [sender        (subscribe [:wallet/address])
