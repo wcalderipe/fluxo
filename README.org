@@ -2,7 +2,8 @@
 
 [[https://github.com/wcalderipe/fluxo/workflows/CI/badge.svg?branch=master]]
 
-A recreational decentralized-application to stream money in the Ethereum blockchain.
+A recreational decentralized-application to stream money in the Ethereum
+blockchain using the [[https://sablier.finance][Sablier protocol]].
 
 Check it live at https://fluxo-dapp.web.app.
 
