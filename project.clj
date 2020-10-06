@@ -12,7 +12,7 @@
                  [re-frame "1.1.1"]
                  [reagent "1.0.0-alpha2"]
                  [thheller/shadow-cljs "2.11.4"]
-
+                 [devcards "0.2.6"]
                  [day8.re-frame/test "0.1.5"]]
 
   :plugins [[lein-shadow "0.3.1"]
@@ -37,7 +37,7 @@
                 :builds {:app {:target     :browser
                                :output-dir "resources/public/js/compiled"
                                :asset-path "/js/compiled"
-                               :modules    {:app {:init-fn  fluxo.core/init
+                               :modules    {:main {:init-fn  fluxo.core/init
                                                   :preloads [devtools.preload]}}
 
                                :devtools {:http-root "resources/public"
@@ -50,6 +50,12 @@
                                         :devtools  {:http-root "target/browser-test"
                                                     :http-port 8290}}
 
+                         :cards {:asset-path       "/js/compiled"
+                                 :modules          {:main {:init-fn fluxo.cards/init}}
+                                 :compiler-options {:devcards true}
+                                 :output-dir       "resources/public/js/compiled"
+                                 :target           :browser}
+
                          :karma-test {:target    :karma
                                       :ns-regexp "-test$"
                                       :output-to "target/karma-test.js"}}}
@@ -61,15 +67,11 @@
                              :macosx  "open"
                              :linux   "xdg-open"}}}
 
-  :aliases {"dev"          ["do"
-                            ["shell" "echo" "\"DEPRECATED: Please use lein watch instead.\""]
-                            ["watch"]]
-            "watch"        ["with-profile" "dev" "do"
+  :aliases {"watch"        ["with-profile" "dev" "do"
                             ["shadow" "watch" "app" "browser-test" "karma-test"]]
 
-            "prod"         ["do"
-                            ["shell" "echo" "\"DEPRECATED: Please use lein release instead.\""]
-                            ["release"]]
+            "cards"        ["with-profile" "dev" "do"
+                            ["shadow" "watch" "cards"]]
 
             "release"      ["with-profile" "prod" "do"
                             ["shadow" "release" "app"]]
@@ -77,10 +79,6 @@
             "build-report" ["with-profile" "prod" "do"
                             ["shadow" "run" "shadow.cljs.build-report" "app" "target/build-report.html"]
                             ["shell" "open" "target/build-report.html"]]
-
-            "karma"        ["do"
-                            ["shell" "echo" "\"DEPRECATED: Please use lein ci instead.\""]
-                            ["ci"]]
 
             "ci"           ["with-profile" "prod" "do"
                             ["shadow" "compile" "karma-test"]

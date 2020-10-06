@@ -28,6 +28,17 @@ Check it live at https://fluxo-dapp.web.app.
 
 ** Tooling
 
+*** Devcards
+
+    There's a separate build to run [[https://github.com/bhauman/devcards][Devcards]] and empower front-end component
+    development by providing a visual REPL.
+
+    #+begin_src shell
+      lein watch cards
+    #+end_src
+
+    Once the build is finish, navigate to =http://localhost:8280=.
+
 *** Linting
 
     We use [[https://github.com/weavejester/cljfmt][cljfmt]] for format Clojure(Script) code following the
