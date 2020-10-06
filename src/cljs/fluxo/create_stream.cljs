@@ -1,7 +1,6 @@
 (ns fluxo.create-stream
   (:require-macros [fluxo.resources :refer [inline]])
   (:require [ajax.core :refer [json-request-format json-response-format]]
-            [devcards.core :as dc]
             [fluxo.money :refer [from-wei to-wei]]
             [fluxo.wallet :refer [mask-address]]
             [re-frame.core :refer [dispatch inject-cofx reg-event-db reg-event-fx reg-sub subscribe]]
@@ -47,9 +46,6 @@
   [:div
    [:p "What's the Ethereum address or ENS name you want to send money to?"]
    [recipient-form (:recipient model)]])
-
-(dc/defcard "Recipient Component"
-  (dc/reagent [recipient-component {:recipient "0xfoo111bar"}]))
 
 (defn recipient-step []
   (let [recipient (subscribe [:create-stream/recipient])]

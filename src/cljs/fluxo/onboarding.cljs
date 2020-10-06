@@ -1,8 +1,7 @@
 (ns fluxo.onboarding
   (:require [fluxo.wallet :refer [mask-address]]
             [fluxo.routes :refer [url-for]]
-            [re-frame.core :refer [dispatch subscribe reg-event-fx inject-cofx]]
-            [devcards.core :as dc]))
+            [re-frame.core :refer [dispatch subscribe reg-event-fx inject-cofx]]))
 
 (defn fetch-accounts-handler [cofx _]
   {:wallet/request {:method     "eth_accounts"
@@ -42,15 +41,6 @@
    (if (:wallet-connected? model)
      [start-streaming-money {:wallet-address (:wallet-addr model)}]
      [connect-your-wallet {:on-click #(dispatch [:onboarding/connect-wallet])}])])
-
-(dc/defcard
-  "Onboarding Component - Conntect to MetaMask"
-  (dc/reagent [onboarding-component {:wallet-connected? false}]))
-
-(dc/defcard
-  "Onboarding Component - Connected wallet"
-  (dc/reagent [onboarding-component {:wallet-connected? true
-                                     :wallet-addr       "0xfoo111bar"}]))
 
 (defn onboarding-panel []
   (let [_                 (dispatch [:onboarding/fetch-accounts])

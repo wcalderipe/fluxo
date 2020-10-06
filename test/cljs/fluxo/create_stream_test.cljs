@@ -1,9 +1,11 @@
 (ns fluxo.create-stream-test
   (:require [cljs.test :refer-macros [deftest testing is use-fixtures]]
+            [cljsjs.react]
             [day8.re-frame.test :refer [run-test-sync]]
-            [re-frame.core :as rf]
+            [devcards.core :as dc :refer-macros [defcard]]
+            [fluxo.create-stream :as create-stream]
             [fluxo.test-helper :refer [fixture-re-frame with-mounted-component found-in]]
-            [fluxo.create-stream :as create-stream]))
+            [re-frame.core :as rf]))
 
 (use-fixtures :each (fixture-re-frame))
 
@@ -19,6 +21,15 @@
 
      (testing "redirects to the amount step"
        (is (= :create-stream/amount @active-route))))))
+
+(defcard
+  (dc/reagent
+   [:div
+    [:h2 [:i "Initial state"]]
+    [create-stream/recipient-component {:recipient nil}]
+
+    [:h2 [:i "Recipient input filled"]]
+    [create-stream/recipient-component {:recipient "0xfoo111bar"}]]))
 
 (defn- stub-etherscan [{expected-params :expected-params
                         response :response}]

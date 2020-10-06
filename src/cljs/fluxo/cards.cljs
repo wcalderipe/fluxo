@@ -2,8 +2,9 @@
   (:require [cljsjs.react.dom]
             [cljsjs.react]
             [devcards.core :refer [start-devcard-ui!]]
-            [fluxo.create-stream]
-            [fluxo.onboarding]))
+            ;; IMPORTANT: Add here all namespaces who are defining devcards.
+            [fluxo.create-stream-test]
+            [fluxo.onboarding-test]))
 
 (defn ^:export init
   "Start the devcards UI."

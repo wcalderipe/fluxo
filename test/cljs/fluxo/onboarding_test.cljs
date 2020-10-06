@@ -1,6 +1,8 @@
 (ns fluxo.onboarding-test
   (:require [cljs.test :refer-macros [deftest testing is use-fixtures]]
+            [cljsjs.react]
             [day8.re-frame.test :as rf-test]
+            [devcards.core :as dc :refer-macros [defcard]]
             [re-frame.core :as rf]
             [fluxo.test-helper :refer [fixture-re-frame with-mounted-component found-in]]
             [fluxo.onboarding :as onboarding]))
@@ -41,3 +43,13 @@
    (with-mounted-component [onboarding/onboarding-panel]
      (fn [_ div]
        (is (found-in #"Your connected wallet is 0x1fo...bar" div))))))
+
+(defcard
+  (dc/reagent
+   [:div
+    [:h2 [:i "Initial state"]]
+    [onboarding/onboarding-component {:wallet-connected? false}]
+
+    [:h2 [:i "Wallet connected"]]
+    [onboarding/onboarding-component {:wallet-connected? true
+                                      :wallet-addr       "0xfoo111bar"}]]))
