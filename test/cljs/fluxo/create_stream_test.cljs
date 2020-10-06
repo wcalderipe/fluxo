@@ -23,13 +23,14 @@
        (is (= :create-stream/amount @active-route))))))
 
 (defcard
+  "Recipient Step Component"
   (dc/reagent
    [:div
-    [:h2 [:i "Initial state"]]
-    [create-stream/recipient-component {:recipient nil}]
+    [:h3 [:i "Initial state"]]
+    [create-stream/recipient-component {:recipient-addr nil}]
 
-    [:h2 [:i "Recipient input filled"]]
-    [create-stream/recipient-component {:recipient "0xfoo111bar"}]]))
+    [:h3 [:i "Recipient input filled"]]
+    [create-stream/recipient-component {:recipient-addr "0xfoo111bar"}]]))
 
 (defn- stub-etherscan [{expected-params :expected-params
                         response :response}]
@@ -83,6 +84,16 @@
      (with-mounted-component [create-stream/amount-step]
        (fn [_ div]
          (is (found-in #"\"200\"" div)))))))
+
+(defcard
+  "Amount Step Component"
+  (dc/reagent
+   [:div
+    [:h3 [:i "Initial state"]]
+    [create-stream/amount-component {:assets         [{:name "Foo" :symbol "FOO"}
+                                                      {:name "Bar" :symbol "BAR"}]
+                                     :amount         "200"
+                                     :recipient-addr "0xfoo111bar"}]]))
 
 (deftest duration-form-submit-test
   (run-test-sync

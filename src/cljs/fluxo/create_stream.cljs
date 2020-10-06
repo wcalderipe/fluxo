@@ -42,15 +42,15 @@
         [:input {:type :submit
                  :value "Continue"}]]])))
 
-(defn recipient-component [model]
+(defn recipient-component [{:keys [recipient-addr]}]
   [:div
    [:p "What's the Ethereum address or ENS name you want to send money to?"]
-   [recipient-form (:recipient model)]])
+   [recipient-form recipient-addr]])
 
 (defn recipient-step []
-  (let [recipient (subscribe [:create-stream/recipient])]
+  (let [recipient-addr (subscribe [:create-stream/recipient])]
     (fn []
-      [recipient-component {:recipient @recipient}])))
+      [recipient-component {:recipient-addr @recipient-addr}])))
 
 (defn on-token-contract-success [db [_ response]]
   (assoc-in db [:create-stream :token :contract-abi] response))
@@ -139,15 +139,20 @@
         [:input {:type  :submit
                  :value "Continue"}]]])))
 
+(defn amount-component [{:keys [assets amount recipient-addr]}]
+  [:div
+   [:p "How much do you want to sent to " (mask-address recipient-addr) "?"]
+   [amount-form {:assets assets
+                 :amount amount}]])
+
 (defn amount-step []
   (let [assets    (subscribe [:wallet/assets])
         recipient (subscribe [:create-stream/recipient])
         amount    (subscribe [:create-stream/amount])]
     (fn []
-      [:div
-       [:p "How much do you want to sent to " (mask-address @recipient) "?"]
-       [amount-form {:assets @assets
-                     :amount (from-wei @amount)}]])))
+      [amount-component {:assets         @assets
+                         :amount         (from-wei @amount)
+                         :recipient-addr @recipient}])))
 
 (defn on-duration-submit [_ [_ form-state]]
   {:fx [[:dispatch [:create-stream/add-duration (:duration form-state)]]
