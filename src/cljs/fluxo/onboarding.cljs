@@ -1,32 +1,8 @@
 (ns fluxo.onboarding
   (:require [fluxo.wallet :refer [mask-address]]
             [fluxo.routes :refer [url-for]]
-            [re-frame.core :refer [dispatch subscribe reg-event-fx inject-cofx]]))
-
-(defn connect-your-wallet [{on-click :on-click}]
-  [:div
-   [:p "It seems you haven't connected your wallet yet. Let's do that first!"]
-   [:button {:on-click on-click}
-    "Connect to MetaMask"]])
-
-(defn start-streaming-money [{wallet-address :wallet-address
-                              on-click       :on-click}]
-  [:div
-   [:p "Your connected wallet is " (mask-address wallet-address)]
-   [:a {:href (url-for :create-stream/recipient)} "Create your first stream!"]])
-
-(defn onboarding-panel []
-  (let [_                 (dispatch [:onboarding/fetch-accounts])
-        wallet-connected? (subscribe [:wallet/connected?])
-        wallet-address    (subscribe [:wallet/address])]
-    (fn []
-      [:div
-       [:h1 "Welcome to Fluxo"]
-       [:p "Fluxo is a decentralized-app to stream money in the Ethereum blockchain."]
-       (if @wallet-connected?
-         [start-streaming-money {:wallet-address @wallet-address
-                                 :on-click       #(js/console.log "set active panel")}]
-         [connect-your-wallet {:on-click #(dispatch [:onboarding/connect-wallet])}])])))
+            [re-frame.core :refer [dispatch subscribe reg-event-fx inject-cofx]]
+            [devcards.core :as dc]))
 
 (defn fetch-accounts-handler [cofx _]
   {:wallet/request {:method     "eth_accounts"
@@ -47,3 +23,39 @@
  :onboarding/connect-wallet
  [(inject-cofx :web3/ethereum)]
  connect-wallet-handler)
+
+(defn connect-your-wallet [{on-click :on-click}]
+  [:div
+   [:p "It seems you haven't connected your wallet yet. Let's do that first!"]
+   [:button {:on-click on-click}
+    "Connect to MetaMask"]])
+
+(defn start-streaming-money [{wallet-address :wallet-address}]
+  [:div
+   [:p "Your connected wallet is " (mask-address wallet-address)]
+   [:a {:href (url-for :create-stream/recipient)} "Create your first stream!"]])
+
+(defn onboarding-component [model]
+  [:div
+   [:h1 "Welcome to Fluxo"]
+   [:p "Fluxo is a decentralized-app to stream money in the Ethereum blockchain."]
+   (if (:wallet-connected? model)
+     [start-streaming-money {:wallet-address (:wallet-addr model)}]
+     [connect-your-wallet {:on-click #(dispatch [:onboarding/connect-wallet])}])])
+
+(dc/defcard
+  "Onboarding Component - Conntect to MetaMask"
+  (dc/reagent [onboarding-component {:wallet-connected? false}]))
+
+(dc/defcard
+  "Onboarding Component - Connected wallet"
+  (dc/reagent [onboarding-component {:wallet-connected? true
+                                     :wallet-addr       "0xfoo111bar"}]))
+
+(defn onboarding-panel []
+  (let [_                 (dispatch [:onboarding/fetch-accounts])
+        wallet-connected? (subscribe [:wallet/connected?])
+        wallet-addr       (subscribe [:wallet/address])]
+    (fn []
+      [onboarding-component {:wallet-connected? @wallet-connected?
+                             :wallet-addr       @wallet-addr}])))

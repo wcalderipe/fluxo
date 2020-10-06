@@ -1,8 +1,9 @@
 (ns fluxo.cards
-  (:require [cljsjs.react]
-            [cljsjs.react.dom]
+  (:require [cljsjs.react.dom]
+            [cljsjs.react]
             [devcards.core :refer [start-devcard-ui!]]
-            [devcards.core :as dc :refer [defcard]]))
+            [fluxo.create-stream]
+            [fluxo.onboarding]))
 
 (defn ^:export init
   "Start the devcards UI."
