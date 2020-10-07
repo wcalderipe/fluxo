@@ -35,17 +35,15 @@
                            (.preventDefault e)
                            (dispatch [:create-stream/on-recipient-submit @state]))}
        [:div
-        [:input {:type :text
-                 :value (:address @state)
-                 :on-change #(swap! state assoc :address (.. % -target -value))}]]
-       [:div
-        [:input {:type :submit
-                 :value "Continue"}]]])))
+        [:label {:for :recipient-addr}
+         "What's the Ethereum address or ENS name you want to send money to?"]
+        [:input#recipient-addr {:type      :text
+                                :value     (:address @state)
+                                :on-change #(swap! state assoc :address (.. % -target -value))}]]
+       [:button {:type :submit} "Continue"]])))
 
 (defn recipient-component [{:keys [recipient-addr]}]
-  [:div
-   [:p "What's the Ethereum address or ENS name you want to send money to?"]
-   [recipient-form recipient-addr]])
+  [recipient-form recipient-addr])
 
 (defn recipient-step []
   (let [recipient-addr (subscribe [:create-stream/recipient])]
@@ -117,33 +115,28 @@
   (fn [{s :symbol}]
     (= s symbol)))
 
-(defn amount-form [{assets :assets
-                    amount :amount}]
+(defn amount-form [{:keys [assets, amount recipient-addr]}]
   (let [state (reagent/atom {:token  (first assets)
                              :amount amount})]
     (fn []
-      [:form {:on-submit (fn [e]
-                           (.preventDefault e)
-                           (dispatch [:create-stream/on-amount-submit @state]))}
+      [:form#amount-step {:on-submit (fn [e]
+                                       (.preventDefault e)
+                                       (dispatch [:create-stream/on-amount-submit @state]))}
        [:div
-        [:select {:on-change #(swap! state assoc :token (filter (find-by-symbol (.. % -target -value)) assets))}
+        [:label {:for :token} "First, select a token"]
+        [:label {:for :amount}
+         "How much do you want to sent to " (mask-address recipient-addr) "?"]
+        [:select#token {:on-change #(swap! state assoc :token (filter (find-by-symbol (.. % -target -value)) assets))}
          (for [{token  :token
-                name   :name
                 symbol :symbol} assets]
-           ^{:key (str name symbol)} [:option {:value symbol} name])]]
-       [:div
-        [:input {:type      :text
-                 :value     (:amount @state)
-                 :on-change #(swap! state assoc :amount (.. % -target -value))}]]
-       [:div
-        [:input {:type  :submit
-                 :value "Continue"}]]])))
+           ^{:key (str name symbol)} [:option {:value symbol} symbol])]
+        [:input#amount {:type      :text
+                        :value     (:amount @state)
+                        :on-change #(swap! state assoc :amount (.. % -target -value))}]]
+       [:button {:type :submit} "Continue"]])))
 
-(defn amount-component [{:keys [assets amount recipient-addr]}]
-  [:div
-   [:p "How much do you want to sent to " (mask-address recipient-addr) "?"]
-   [amount-form {:assets assets
-                 :amount amount}]])
+(defn amount-component [model]
+  [amount-form model])
 
 (defn amount-step []
   (let [assets    (subscribe [:wallet/assets])

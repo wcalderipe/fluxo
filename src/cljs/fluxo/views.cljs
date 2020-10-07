@@ -21,5 +21,4 @@
       ;; TODO: Remove the debugging log or find a way to use environment
       ;; variables to instrument it only in development.
       (js/console.log "db state:" @db)
-      [:div
-       [panel @active-route]])))
+      [panel @active-route])))
