@@ -1,6 +1,6 @@
 * fluxo
 
-[[https://github.com/wcalderipe/fluxo/workflows/CI/badge.svg?branch=master]]
+[[https://github.com/wcalderipe/fluxo/workflows/CD/badge.svg?branch=master]]
 
 A recreational decentralized-application to stream money in the Ethereum
 blockchain using the [[https://sablier.finance][Sablier protocol]].
