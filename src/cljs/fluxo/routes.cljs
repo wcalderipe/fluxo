@@ -1,7 +1,7 @@
 (ns fluxo.routes
-  (:require [bidi.bidi :refer [match-route path-for]]
-            [pushy.core :refer [pushy start!]]
-            [re-frame.core :refer [dispatch reg-event-db reg-sub]]))
+  (:require [bidi.bidi :as bidi]
+            [pushy.core :as pushy]
+            [re-frame.core :as rf]))
 
 (def routes ["/" {""             :home
                   "recipient"    {"" :create-stream/recipient}
@@ -10,31 +10,35 @@
                   "confirmation" {"" :create-stream/confirmation}}])
 
 (defn- dispatch-route [matched-route]
-  (dispatch [:routes/redirect-to (:handler matched-route)]))
+  (rf/dispatch [:routes/redirect-to (:handler matched-route)]))
 
 (defn- parse-url [url]
-  (match-route routes url))
+  (prn url)
+  (bidi/match-route routes url))
 
-(defn app-routes []
-  (start! (pushy dispatch-route parse-url)))
+(def history (pushy/pushy dispatch-route parse-url))
+
+(defn start! []
+  (pushy/start! history))
 
 (defn url-for [route]
-  (path-for routes route))
+  (bidi/path-for routes route))
 
-(defn redirect-to-handler
-  "Handler to set the value of :active-panel in the db."
-  [db [_ panel]]
-  (assoc-in db [:routes :active] panel))
+(defn set-token! [token]
+  (pushy/set-token! history token))
 
-(reg-event-db
+(rf/reg-fx
+ :routes/set-url
+ (fn [url]
+   (set-token! url)))
+
+(rf/reg-event-fx
  :routes/redirect-to
- redirect-to-handler)
+ (fn [cofx [_ panel]]
+   {:db (assoc-in (:db cofx) [:routes :active] panel)
+    :routes/set-url (url-for panel)}))
 
-(defn get-active-route-handler
-  "Get the active panel from the db."
-  [db]
-  (get-in db [:routes :active]))
-
-(reg-sub
+(rf/reg-sub
  :routes/active
- get-active-route-handler)
+ (fn [db]
+   (get-in db [:routes :active])))
