@@ -24,19 +24,18 @@
  connect-wallet-handler)
 
 (defn connect-your-wallet [{on-click :on-click}]
-  [:div
+  [:div.cta
    [:p "It seems you haven't connected your wallet yet. Let's do that first!"]
    [:button {:on-click on-click}
     "Connect to MetaMask"]])
 
 (defn start-streaming-money [{wallet-address :wallet-address}]
-  [:div
+  [:div.cta
    [:p "Your connected wallet is " (mask-address wallet-address)]
-   [:a {:href (url-for :create-stream/recipient)} "Create your first stream!"]])
+   [:a.button {:href (url-for :create-stream/recipient)} "Create your first stream!"]])
 
 (defn onboarding-component [model]
   [:div
-   [:h1 "Welcome to Fluxo"]
    [:p "Fluxo is a decentralized-app to stream money in the Ethereum blockchain."]
    (if (:wallet-connected? model)
      [start-streaming-money {:wallet-address (:wallet-addr model)}]
@@ -47,5 +46,7 @@
         wallet-connected? (subscribe [:wallet/connected?])
         wallet-addr       (subscribe [:wallet/address])]
     (fn []
-      [onboarding-component {:wallet-connected? @wallet-connected?
-                             :wallet-addr       @wallet-addr}])))
+      [:section#onboarding
+       [:h1 "Welcome to Fluxo"]
+       [onboarding-component {:wallet-connected? @wallet-connected?
+                              :wallet-addr       @wallet-addr}]])))
