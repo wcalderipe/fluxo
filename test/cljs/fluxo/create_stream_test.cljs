@@ -170,7 +170,7 @@
    (testing "renders information collected in previous steps"
      (with-mounted-component [create-stream/confirmation-step]
        (fn [_ div]
-         (is (found-in #"From 0xbar...foo" div))
-         (is (found-in #"To 0xfoo...bar" div))
-         (is (found-in #"Amount FOO 200" div))
-         (is (found-in #"Duration 2 hours" div)))))))
+         (is (found-in #"0xbar...foo" div))
+         (is (found-in #"0xfoo...bar" div))
+         (is (found-in #"FOO 200" div))
+         (is (found-in #"2 hours" div)))))))
