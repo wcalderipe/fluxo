@@ -1,6 +1,7 @@
 (ns fluxo.web3
   (:require-macros [fluxo.resources :refer [inline]])
   (:require ["web3" :as Web3]
+            ["web3-utils" :as web3-utils]
             [re-frame.core :refer [dispatch reg-cofx reg-fx]]))
 
 (defn ethereum!
@@ -47,23 +48,69 @@
 (defn- make-approve-tx [^js/web3.eth.Contract token spender amount]
   (.approve (.. token -methods) spender amount))
 
+(defn request-approval-fx [{:keys [provider token-addr token-abi spender-addr
+                                   amount wallet-addr on-success on-failure]}]
+  (let [web3  (make-web3 provider)
+        _     (set-contract-provider! web3 provider)
+        token (make-contract web3 token-abi token-addr)
+        tx    (make-approve-tx token spender-addr amount)]
+    (-> (.send tx #js{:from wallet-addr})
+        (.then #(dispatch (conj on-success %)))
+        (.catch #(dispatch (conj on-failure %))))))
+
 (reg-fx
  :web3/request-approval
- (fn [{:keys [provider token-addr token-abi spender-addr
-              amount wallet-addr on-success on-failure]}]
-   (let [web3       (make-web3 provider)
-         _          (set-contract-provider! web3 provider)
-         token      (make-contract web3 token-abi token-addr)
-         tx         (make-approve-tx token spender-addr amount)]
-     (-> (.send tx #js{:from wallet-addr})
-         (.then #(dispatch (conj on-success %)))
-         (.catch #(dispatch (conj on-failure %)))))))
+ request-approval-fx)
+
+(defn- now! []
+  (js/Math.round (/ (-> (js/Date.) .getTime) 1000)))
+
+(defn- hours->secs [h]
+  (* h 3600))
+
+(defn- make-create-stream-tx [^js/web3.eth.Contract sablier recipient-addr
+                              amount token-addr start-time stop-time]
+  (.createStream (.. sablier -methods) recipient-addr amount token-addr start-time stop-time))
+
+
+(defn- to-bn [n]
+  (.toBN web3-utils (if (= js/Number (type n)) (str n) n)))
+
+(defn- calculate-streamble-amount
+  "Returns the closest ether amount which is multiple of the difference between stop
+  time and start time.
+
+  See https://docs.sablier.finance/streams#the-deposit-gotcha"
+  [start-time stop-time amount]
+  (let [time-delta       (to-bn (- stop-time start-time))
+        converted-amount (to-bn amount)
+        remainder        (.mod converted-amount time-delta)
+        result           (.sub converted-amount remainder)]
+    (.toString result)))
+
+(defonce sablier-ropsten {:address      "0xc04Ad234E01327b24a831e3718DBFcbE245904CC"
+                          :contract-abi (.parse js/JSON (inline "ropsten_sablier-contract-abi.json"))})
+
+(defn create-stream-fx [{:keys [provider token-addr wallet-addr recipient-addr
+                                amount duration on-success on-failure]}]
+  (let [web3             (make-web3 provider)
+        _                (set-contract-provider! web3 provider)
+        sablier-abi      (:contract-abi sablier-ropsten)
+        sablier-addr     (:address sablier-ropsten)
+        sablier          (make-contract web3 sablier-abi sablier-addr)
+        start-time       (+ (now!) (hours->secs 1))
+        stop-time        (+ start-time (hours->secs duration))
+        streamble-amount (calculate-streamble-amount start-time stop-time amount)
+        tx               (make-create-stream-tx sablier recipient-addr streamble-amount token-addr start-time stop-time)]
+    (-> (.send tx #js{:from wallet-addr})
+        (.then #(dispatch (conj on-success %)))
+        (.catch #(dispatch (conj on-failure %))))))
+
+(reg-fx
+ :web3/create-stream
+ create-stream-fx)
 
 (comment
-  ;; Request user's accounts
-  (request-accounts (ethereum!) #(prn %))
-
-  ;; Request approval for ERC20 token
   (def test-dai-ropsten {:address      "0x2d69ad895797c880abce92437788047ba0eb7ff6"
                          :contract-abi (.parse js/JSON (inline "ropsten_test-dai-contract-abi.json"))})
   (def sablier-ropsten {:address      "0xc04Ad234E01327b24a831e3718DBFcbE245904CC"
@@ -72,7 +119,18 @@
   ;; NOTE: Change this def value to the same address of the connected wallet.
   (def wallet-addr "CHANGE_ME")
 
-  ;; Connecting the dots...
+  ;; Request user's accounts --------------------------------------------------
+  (request-accounts (ethereum!) #(prn %))
+
+  ;; Sablier's deposit gotcha -------------------------------------------------
+  ;; See https://docs.sablier.finance/streams#the-deposit-gotcha
+  (let [delta     (to-bn "2592000")
+        amount    (to-bn "3000000000000000000000")
+        remainder (.mod amount delta)
+        result    (.sub amount remainder)]
+    (.toString result)) ;; Expected return: 2999999999999998944000
+
+  ;; Request approval for ERC20 token -----------------------------------------
   (let [provider      (given-provider)
         web3          (make-web3 provider)
         _             (set-contract-provider! web3 provider)
@@ -80,33 +138,55 @@
         token-address (:address test-dai-ropsten)
         token         (make-contract web3 token-abi token-address)
         spender       (:address sablier-ropsten)
-        amount        (fluxo.money/to-wei "200")
+        ;; amount        (fluxo.money/to-wei "3000")
+        amount         "2999999999999998944000"
         tx            (.approve (.. token -methods) spender amount)]
     (.then (.send tx #js{:from wallet-addr}) #(js/console.log %)))
 
   ;; re-frame way...
-  (re-frame.core/reg-event-db
-   ::on-approval-success
-   (fn [db [_ result]]
-     (prn result)
-     (assoc db ::success result)))
-
-  (re-frame.core/reg-event-db
-   ::on-approval-failure
-   (fn [db [_ result]]
-     (prn result)
-     (assoc db ::failure result)))
-
   (re-frame.core/reg-event-fx
-   ::request-approval
-   (fn [_ [_ params]]
-     {:web3/request-approval params}))
+   ::on-spend-approval
+   (fn [_ [_ result]]
+     (js/console.log result)))
 
-  (dispatch [::request-approval {:provider     (given-provider)
-                                 :token-addr   (:address test-dai-ropsten)
-                                 :token-abi    (:contract-abi test-dai-ropsten)
-                                 :spender-addr (:address sablier-ropsten)
-                                 :wallet-addr  wallet-addr
-                                 :amount       (fluxo.money/to-wei "200")
-                                 :on-success   [::on-approval-success]
-                                 :on-failure   [::on-approval-failure]}]))
+  (request-approval-fx {:provider     (given-provider)
+                        :token-addr   (:address test-dai-ropsten)
+                        :token-abi    (:contract-abi test-dai-ropsten)
+                        :spender-addr (:address sablier-ropsten)
+                        :wallet-addr  wallet-addr
+                        :amount       (fluxo.money/to-wei "200")
+                        :on-success   [::on-spend-approval]
+                        :on-failure   [::on-spend-approval]})
+
+  ;; Create Sablier stream ----------------------------------------------------
+  (def recipient-addr "CHANGE_ME")
+
+  ;; re-frame way...
+  (re-frame.core/reg-event-fx
+   ::on-create-stream
+   (fn [_ [_ response]]
+     (js/console.log response)))
+
+  (create-stream-fx {:provider (given-provider)
+                     :token-addr (:address test-dai-ropsten)
+                     :wallet-addr wallet-addr
+                     :recipient-addr recipient-addr
+                     :amount (fluxo.money/to-wei "200")
+                     :duration 2
+                     :on-success [::on-create-stream]
+                     :on-failure [::on-create-stream]})
+
+  ;; Get Sablier stream ----------------------------------------------------
+
+  (let [sablier-methods (-> sablier-contract .-methods)
+        get-stream (.getStream sablier-methods 113)
+        tx (.call get-stream #js{:from my-wallet})
+        _ (.then tx #(js/console.log %))])
+
+  (let [provider       (given-provider)
+        web3           (make-web3 provider)
+        _              (set-contract-provider! web3 provider)
+        sablier        (make-contract web3 (:contract-abi sablier-ropsten) (:address sablier-ropsten))
+        stream-id      "115"
+        tx             (.getStream (.. sablier -methods) stream-id)]
+    (.then (.call tx #js{:from wallet-addr}) #(js/console.log %))))

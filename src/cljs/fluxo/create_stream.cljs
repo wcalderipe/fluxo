@@ -218,9 +218,23 @@
 
 (reg-event-fx
  :create-stream/on-spend-approve-success
+ [(inject-cofx :web3/provider)]
  (fn [cofx [_ stream result]]
    (js/console.log "Spend approved:" result)
    (js/console.log "Stream:" stream)
+   {:web3/create-stream {:provider       (:web3/provider cofx)
+                         :token-addr     (get-in stream [:token :address])
+                         :wallet-addr    (.. result -from)
+                         :recipient-addr (:recipient stream)
+                         :amount         (:amount stream)
+                         :duration       (:duration stream)
+                         :on-success     [::on-create-stream]
+                         :on-failure     [::on-create-stream]}}))
+(reg-event-fx
+ ::on-create-stream
+ (fn [cofx [_ response]]
+   (js/console.log response)
+   ;; (.. response -events -CreateStream -returnValues -streamId)
    {:db (assoc (:db cofx) :loading? false)}))
 
 (reg-event-fx
