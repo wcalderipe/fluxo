@@ -28,7 +28,7 @@
   (pushy/set-token! history token))
 
 (rf/reg-fx
- :routes/set-url
+ ::set-url
  (fn [url]
    (set-token! url)))
 
@@ -36,7 +36,7 @@
  :routes/redirect-to
  (fn [cofx [_ panel]]
    {:db (assoc-in (:db cofx) [:routes :active] panel)
-    :routes/set-url (url-for panel)}))
+    ::set-url (url-for panel)}))
 
 (rf/reg-sub
  :routes/active
