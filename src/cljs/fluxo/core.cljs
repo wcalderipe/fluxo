@@ -1,12 +1,13 @@
 (ns fluxo.core
-  (:require [reagent.dom :as rdom]
-            [re-frame.core :as re-frame]
-            [day8.re-frame.http-fx]
-            [fluxo.etherscan]
-            [fluxo.views :as views]
-            [fluxo.db :as db]
+  (:require [day8.re-frame.http-fx]
             [fluxo.config :as config]
-            [fluxo.routes :as routes]))
+            [fluxo.db :as db]
+            [fluxo.etherscan]
+            [fluxo.models.stream]
+            [fluxo.routes :as routes]
+            [fluxo.views :as views]
+            [re-frame.core :as re-frame]
+            [reagent.dom :as rdom]))
 
 (defn dev-setup []
   (when config/debug?

@@ -91,7 +91,7 @@
 (defonce sablier-ropsten {:address      "0xc04Ad234E01327b24a831e3718DBFcbE245904CC"
                           :contract-abi (.parse js/JSON (inline "ropsten_sablier-contract-abi.json"))})
 
-(defn create-stream-fx [{:keys [provider token-addr wallet-addr recipient-addr
+(defn create-stream-fx [{:keys [provider wallet-addr token-addr recipient-addr
                                 amount duration on-success on-failure]}]
   (let [web3             (make-web3 provider)
         _                (set-contract-provider! web3 provider)
@@ -109,6 +109,25 @@
 (reg-fx
  :web3/create-stream
  create-stream-fx)
+
+(defn make-get-stream-tx [^js/web3.eth.Contract sablier stream-id]
+  (.getStream (.. sablier -methods) stream-id))
+
+(defn get-stream-fx [{:keys [provider wallet-addr stream-id
+                             on-success on-failure]}]
+  (let [web3         (make-web3 provider)
+        _            (set-contract-provider! web3 provider)
+        sablier-abi  (:contract-abi sablier-ropsten)
+        sablier-addr (:address sablier-ropsten)
+        sablier      (make-contract web3 sablier-abi sablier-addr)
+        tx           (make-get-stream-tx sablier stream-id)]
+    (-> (.call tx #js{:from wallet-addr})
+        (.then #(dispatch (conj on-success %)))
+        (.catch #(dispatch (conj on-failure %))))))
+
+(reg-fx
+ :web3/get-stream
+ get-stream-fx)
 
 (comment
   (def test-dai-ropsten {:address      "0x2d69ad895797c880abce92437788047ba0eb7ff6"
@@ -178,15 +197,15 @@
 
   ;; Get Sablier stream ----------------------------------------------------
 
-  (let [sablier-methods (-> sablier-contract .-methods)
-        get-stream (.getStream sablier-methods 113)
-        tx (.call get-stream #js{:from my-wallet})
-        _ (.then tx #(js/console.log %))])
+  (re-frame.core/reg-event-fx
+   ::on-get-stream
+   (fn [_ [_ response]]
+     (js/console.log response)))
 
-  (let [provider       (given-provider)
-        web3           (make-web3 provider)
-        _              (set-contract-provider! web3 provider)
-        sablier        (make-contract web3 (:contract-abi sablier-ropsten) (:address sablier-ropsten))
-        stream-id      "115"
-        tx             (.getStream (.. sablier -methods) stream-id)]
-    (.then (.call tx #js{:from wallet-addr}) #(js/console.log %))))
+  (get-stream-fx {:provider (given-provider)
+                  :wallet-addr wallet-addr
+                  :stream-id "CHANGE_ME"
+                  :on-success [::on-get-stream]
+                  :on-failure [::on-get-stream]})
+
+  )

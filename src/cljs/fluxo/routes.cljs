@@ -7,7 +7,8 @@
                   "recipient"    {"" :create-stream/recipient}
                   "amount"       {"" :create-stream/amount}
                   "duration"     {"" :create-stream/duration}
-                  "confirmation" {"" :create-stream/confirmation}}])
+                  "confirmation" {"" :create-stream/confirmation}
+                  "stream"       {"" :stream/details}}])
 
 (defn- dispatch-route [matched-route]
   (rf/dispatch [:routes/redirect-to (:handler matched-route)]))

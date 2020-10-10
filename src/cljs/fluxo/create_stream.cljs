@@ -206,7 +206,6 @@
  [(inject-cofx :web3/provider)]
  (fn [cofx [_ {:keys [token sender amount] :as stream}]]
    {:db                    (assoc (:db cofx) :loading? true)
-
     :web3/request-approval {:provider     (:web3/provider cofx)
                             :token-addr   (:address token)
                             :token-abi    (:contract-abi token)
@@ -228,20 +227,44 @@
                          :recipient-addr (:recipient stream)
                          :amount         (:amount stream)
                          :duration       (:duration stream)
-                         :on-success     [::on-create-stream]
+                         :on-success     [::on-create-stream stream]
                          :on-failure     [::on-create-stream]}}))
-(reg-event-fx
- ::on-create-stream
- (fn [cofx [_ response]]
-   (js/console.log response)
-   ;; (.. response -events -CreateStream -returnValues -streamId)
-   {:db (assoc (:db cofx) :loading? false)}))
-
 (reg-event-fx
  :create-stream/on-spend-approve-failure
  (fn [cofx [_ reason]]
    (js/console.warn "Spend approval declined by the user:" reason)
    {:db (assoc (:db cofx) :loading? false)}))
+
+(defn- get-returned-values [^js response]
+  (.. response -events -CreateStream -returnValues))
+
+(defn- make-stream [^js returned-values]
+  {:id              (.. returned-values -streamId)
+   :deposit-amount  (.. returned-values -deposit)
+   :sender-addr     (.. returned-values -sender)
+   :recipient-addr  (.. returned-values -recipient)
+   :start-time      (js/parseInt (.. returned-values -startTime))
+   :stop-time       (js/parseInt (.. returned-values -stopTime))})
+
+(reg-event-fx
+ ::on-create-stream
+ [(inject-cofx :web3/provider)]
+ (fn [cofx [_ create-stream response]]
+   (js/console.log response)
+   (let [stream (make-stream (get-returned-values response))]
+     {:db (-> (:db cofx)
+              (assoc :loading? false)
+              (assoc :stream (merge stream {:token (:token create-stream)})))
+      :web3/get-stream {:provider  (:web3/provider cofx)
+                        :stream-id (:id stream)
+                        :wallet-addr (:sender-addr stream)
+                        :on-success [::on-get-stream-success]}})))
+
+(reg-event-fx
+ ::on-get-stream-success
+ (fn [cofx [_ stream]]
+   {:db (assoc-in (:db cofx) [:stream :rate-per-second] (.. stream -ratePerSecond))
+    :dispatch [:routes/redirect-to :stream/details]}))
 
 (defn confirmation-step []
   (let [sender        (subscribe [:wallet/address])

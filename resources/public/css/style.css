@@ -91,7 +91,7 @@ input:focus {
 }
 
 
-section#onboarding {
+#onboarding {
   grid-template-rows: auto auto;
 }
 
@@ -107,7 +107,7 @@ form#amount-step input {
   width: auto;
 }
 
-section#confirmation-step {
+#confirmation-step {
   grid-template-rows: auto auto 35px;
 }
 
@@ -120,4 +120,9 @@ section#confirmation-step {
 
 #confirmation-step span.value {
   float: right;
+}
+
+#stream-details {
+  grid-template-rows: auto auto;
+  text-align: center;
 }
