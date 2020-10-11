@@ -56,3 +56,13 @@ jobs:
           args: deploy --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+      # The retation of artifcats in GitHub isn't important after deployed to
+      # Firebase. Moreover, the free storage plan here is very low and just
+      # after a few weeks of development it's above the threshold. That said,
+      # deleting artifacts here is a matter cost by preventing to be double billed
+      # for storage in GitHub and Firebase.
+      - name: Delete GitHub action artifacts
+        uses: geekyeggo/delete-artifact@v1
+        with:
+          name: compiled-app
