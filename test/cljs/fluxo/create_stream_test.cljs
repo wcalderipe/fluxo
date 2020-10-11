@@ -6,6 +6,7 @@
             [fluxo.create-stream :as create-stream]
             [fluxo.etherscan :as etherscan]
             [fluxo.test-helper :refer [fixture-re-frame with-mounted-component found-in]]
+            [fluxo.wallet :as wallet]
             [re-frame.core :as rf]))
 
 (use-fixtures :each (fixture-re-frame))
@@ -123,6 +124,7 @@
 
 (deftest confirmation-test
   (run-test-sync
+
    (rf/reg-cofx
     :web3/provider
     (fn [cofx]
@@ -139,6 +141,10 @@
       (is (= :create-stream/on-spend-approve-failure (first on-failure)))
 
       (rf/dispatch (conj on-success :success))))
+
+   ;; TODO: Add specs for it
+   (rf/reg-fx
+    :web3/create-stream (fn [_ _] )) ;; noop
 
    (rf/dispatch [:db/initialize])
    (rf/dispatch [:wallet/accounts-received ["fake-wallet-addr"]])
