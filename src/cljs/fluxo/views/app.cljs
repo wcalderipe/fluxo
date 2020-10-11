@@ -1,9 +1,11 @@
-(ns fluxo.views
-  (:require [re-frame.core :refer [subscribe]]
-            [fluxo.views.stream :refer [stream]]
+(ns fluxo.views.app
+  (:require [fluxo.views.amount-step :refer [amount-step]]
+            [fluxo.views.confirmation-step :refer [confirmation-step]]
+            [fluxo.views.duration-step :refer [duration-step]]
             [fluxo.views.onboarding :refer [onboarding]]
             [fluxo.views.recipient-step :refer [recipient-step]]
-            [fluxo.create-stream :refer [amount-step duration-step confirmation-step]]))
+            [fluxo.views.stream :refer [stream]]
+            [re-frame.core :refer [subscribe]]))
 
 (defmulti panel identity)
 

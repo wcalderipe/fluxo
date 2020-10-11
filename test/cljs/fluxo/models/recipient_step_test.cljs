@@ -1,5 +1,5 @@
 (ns fluxo.models.recipient-step-test
-  (:require [cljs.test :refer-macros [async testing is use-fixtures]]
+  (:require [cljs.test :refer-macros [testing is use-fixtures]]
             [cljsjs.react]
             [day8.re-frame.test :refer [run-test-sync]]
             [devcards.core :as dc :refer-macros [deftest]]
@@ -12,7 +12,7 @@
 (deftest initial-state-test
   (run-test-sync
    (let [recipient-step (rf/subscribe [::model/recipient-step])]
-     (is (= {:recipient-addr nil})))))
+     (is (= {:recipient-addr nil} @recipient-step)))))
 
 (deftest on-submit-test
   (run-test-sync

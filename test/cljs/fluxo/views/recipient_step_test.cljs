@@ -2,7 +2,7 @@
   (:require [cljsjs.react]
             [devcards.core :as dc :refer-macros [defcard]]
             [re-frame.core :as rf]
-            [fluxo.views.onboarding :as view]))
+            [fluxo.views.recipient-step :as view]))
 
 (defcard
   (dc/reagent

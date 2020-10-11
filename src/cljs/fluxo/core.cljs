@@ -3,7 +3,7 @@
             [fluxo.config :as config]
             [fluxo.db :as db]
             [fluxo.routes :as routes]
-            [fluxo.views :as views]
+            [fluxo.views.app :as app]
             [fluxo.wallet :as wallet]
             [re-frame.core :as rf]
             [reagent.dom :as rdom]))
@@ -16,7 +16,7 @@
   (rf/clear-subscription-cache!)
   (let [root-el (.getElementById js/document "app")]
     (rdom/unmount-component-at-node root-el)
-    (rdom/render [views/main-panel] root-el)))
+    (rdom/render [app/main-panel] root-el)))
 
 (defn init []
   (routes/start!)
