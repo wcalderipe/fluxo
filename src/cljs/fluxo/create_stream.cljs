@@ -3,54 +3,10 @@
   (:require [ajax.core :refer [json-request-format json-response-format]]
             [fluxo.money :refer [from-wei to-wei]]
             [fluxo.wallet :refer [mask-address]]
+            [fluxo.models.create-stream :as model]
             [fluxo.etherscan :as etherscan]
             [re-frame.core :refer [dispatch inject-cofx reg-event-db reg-event-fx reg-sub subscribe]]
             [reagent.core :as reagent]))
-
-(defn on-recipient-submit [_ [_ form-state]]
-  {:fx [[:dispatch [:create-stream/add-recipient (:address form-state)]]
-        [:dispatch [:routes/redirect-to :create-stream/amount]]]})
-
-(reg-event-fx
- :create-stream/on-recipient-submit
- on-recipient-submit)
-
-(defn add-recipient [db [_ recipient]]
-  (assoc-in db [:create-stream :recipient] recipient))
-
-(reg-event-db
- :create-stream/add-recipient
- add-recipient)
-
-(defn recipient [db]
-  (get-in db [:create-stream :recipient]))
-
-(reg-sub
- :create-stream/recipient
- recipient)
-
-(defn recipient-form [recipient-addr]
-  (let [state (reagent/atom {:address recipient-addr})]
-    (fn []
-      [:form {:on-submit (fn [e]
-                           (.preventDefault e)
-                           (dispatch [:create-stream/on-recipient-submit @state]))}
-       [:div
-        [:label {:for :recipient-addr} "Recipient address"]
-        [:input#recipient-addr {:type      :text
-                                :value     (:address @state)
-                                :on-change #(swap! state assoc :address (.. % -target -value))}]]
-       [:button {:type :submit} "Continue"]])))
-
-(defn recipient-component [{:keys [recipient-addr]}]
-  [recipient-form recipient-addr])
-
-(defn recipient-step []
-  (let [recipient-addr (subscribe [:create-stream/recipient])]
-    (fn []
-      [:section
-       [:h1 "What's the Ethereum address or ENS name you want to send money to?"]
-       [recipient-component {:recipient-addr @recipient-addr}]])))
 
 (defn on-token-contract-success [db [_ response]]
   (assoc-in db [:create-stream :token :contract-abi] response))
@@ -144,7 +100,7 @@
 
 (defn amount-step []
   (let [assets    (subscribe [:wallet/assets])
-        recipient (subscribe [:create-stream/recipient])
+        recipient (subscribe [::model/recipient-addr])
         amount    (subscribe [:create-stream/amount])]
     (fn []
       [amount-component {:assets         @assets
@@ -188,7 +144,7 @@
        [:button {:type :submit} "Continue"]])))
 
 (defn duration-step []
-  (let [recipient-addr (subscribe [:create-stream/recipient])
+  (let [recipient-addr (subscribe [::model/recipient-addr])
         token-symbol   (subscribe [:create-stream/token-symbol])
         amount         (subscribe [:create-stream/amount-in-wei])
         duration       (subscribe [:create-stream/duration])]
@@ -269,7 +225,7 @@
 
 (defn confirmation-step []
   (let [sender        (subscribe [:wallet/address])
-        recipient     (subscribe [:create-stream/recipient])
+        recipient     (subscribe [::model/recipient-addr])
         token         (subscribe [:create-stream/token])
         amount        (subscribe [:create-stream/amount])
         amount-in-wei (subscribe [:create-stream/amount-in-wei])

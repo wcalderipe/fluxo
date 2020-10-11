@@ -2,8 +2,8 @@
   (:require [re-frame.core :refer [subscribe]]
             [fluxo.views.stream :refer [stream]]
             [fluxo.views.onboarding :refer [onboarding]]
-            [fluxo.create-stream :refer [recipient-step amount-step
-                                         duration-step confirmation-step]]))
+            [fluxo.views.recipient-step :refer [recipient-step]]
+            [fluxo.create-stream :refer [amount-step duration-step confirmation-step]]))
 
 (defmulti panel identity)
 

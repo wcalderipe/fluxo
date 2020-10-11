@@ -5,34 +5,12 @@
             [devcards.core :as dc :refer-macros [defcard]]
             [fluxo.create-stream :as create-stream]
             [fluxo.etherscan :as etherscan]
+            [fluxo.models.create-stream :as model]
             [fluxo.test-helper :refer [fixture-re-frame with-mounted-component found-in]]
             [fluxo.wallet :as wallet]
             [re-frame.core :as rf]))
 
 (use-fixtures :each (fixture-re-frame))
-
-(deftest recipient-form-submit-test
-  (run-test-sync
-   (let [recipient (rf/subscribe [:create-stream/recipient])
-         active-route (rf/subscribe [:routes/active])]
-
-     (rf/dispatch [:create-stream/on-recipient-submit {:address "0xfoo111bar"}])
-
-     (testing "adds address as the stream recipient"
-       (is (= "0xfoo111bar" @recipient)))
-
-     (testing "redirects to the amount step"
-       (is (= :create-stream/amount @active-route))))))
-
-(defcard
-  "Recipient Step Component"
-  (dc/reagent
-   [:div
-    [:h3 [:i "Initial state"]]
-    [create-stream/recipient-component {:recipient-addr nil}]
-
-    [:h3 [:i "Recipient input filled"]]
-    [create-stream/recipient-component {:recipient-addr "0xfoo111bar"}]]))
 
 (defn- stub-etherscan [{expected-params :expected-params
                         response :response}]
@@ -156,7 +134,7 @@
 
    (let [db (rf/subscribe [:db/state])
          sender        (rf/subscribe [:wallet/address])
-         recipient     (rf/subscribe [:create-stream/recipient])
+         recipient     (rf/subscribe [::model/recipient-addr])
          token         (rf/subscribe [:create-stream/token])
          amount        (rf/subscribe [:create-stream/amount])
          duration      (rf/subscribe [:create-stream/duration])]
