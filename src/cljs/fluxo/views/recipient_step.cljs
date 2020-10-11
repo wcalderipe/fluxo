@@ -13,6 +13,11 @@
         [:label {:for :recipient-addr} "Recipient address"]
         [:input#recipient-addr {:type      :text
                                 :value     (:address @state)
+                                :required  true
+                                ;; Classic Ethereum address regex. This most
+                                ;; likely has edge-cases but will work better
+                                ;; than nothing for now.
+                                :pattern   "^0x[a-fA-F0-9]{40}$"
                                 :on-change #(swap! state assoc :address (.. % -target -value))}]]
        [:button {:type :submit} "Continue"]])))
 

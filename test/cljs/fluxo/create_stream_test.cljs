@@ -122,7 +122,7 @@
 
    ;; TODO: Add specs for it
    (rf/reg-fx
-    :web3/create-stream (fn [_ _] )) ;; noop
+    :web3/create-stream (fn [_ _])) ;; noop
 
    (rf/dispatch [:db/initialize])
    (rf/dispatch [:wallet/accounts-received ["fake-wallet-addr"]])

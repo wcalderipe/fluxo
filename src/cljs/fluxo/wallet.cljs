@@ -10,7 +10,6 @@
           end   (apply str (take-last 3 address))]
       (str start "..." end))))
 
-
 (rf/reg-event-fx
  ::get-accounts
  [(rf/inject-cofx :web3/ethereum)]
