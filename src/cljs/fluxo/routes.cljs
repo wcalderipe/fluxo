@@ -14,7 +14,6 @@
   (rf/dispatch [:routes/redirect-to (:handler matched-route)]))
 
 (defn- parse-url [url]
-  (prn url)
   (bidi/match-route routes url))
 
 (def history (pushy/pushy dispatch-route parse-url))

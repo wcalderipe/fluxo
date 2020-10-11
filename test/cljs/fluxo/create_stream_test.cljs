@@ -49,7 +49,7 @@
 (deftest amount-step-view-test
   (run-test-sync
    (rf/dispatch [:db/initialize])
-   (rf/dispatch [:create-stream/add-recipient "0xfoo111bar"])
+   (rf/dispatch [::model/add-recipient "0xfoo111bar"])
 
    (testing "renders recipient address"
      (with-mounted-component [create-stream/amount-step]
@@ -91,7 +91,7 @@
 (deftest duration-step-view-test
   (run-test-sync
    (rf/dispatch [:db/initialize])
-   (rf/dispatch [:create-stream/add-recipient "0xfoo111bar"])
+   (rf/dispatch [::model/add-recipient "0xfoo111bar"])
    (rf/dispatch [:create-stream/add-amount "200"])
    (rf/dispatch [:create-stream/add-token {:symbol "FOO"}])
 
@@ -126,7 +126,7 @@
 
    (rf/dispatch [:db/initialize])
    (rf/dispatch [:wallet/accounts-received ["fake-wallet-addr"]])
-   (rf/dispatch [:create-stream/add-recipient "fake-recipient-addr"])
+   (rf/dispatch [::model/add-recipient "fake-recipient-addr"])
    (rf/dispatch [:create-stream/add-amount "200"])
    (rf/dispatch [:create-stream/add-token {:address "fake-token-addr"}])
    (rf/dispatch [:create-stream/on-token-contract-success :fake-contract-abi])
@@ -147,7 +147,7 @@
   (run-test-sync
    (rf/dispatch [:db/initialize])
    (rf/dispatch [:wallet/accounts-received ["0xbar222foo"]])
-   (rf/dispatch [:create-stream/add-recipient "0xfoo111bar"])
+   (rf/dispatch [::model/add-recipient "0xfoo111bar"])
    (rf/dispatch [:create-stream/add-amount "200"])
    (rf/dispatch [:create-stream/add-token {:symbol "FOO"}])
    (rf/dispatch [:create-stream/add-duration 2])
