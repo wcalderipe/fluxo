@@ -7,7 +7,7 @@ blockchain using the [[https://sablier.finance][Sablier protocol]].
 
 Check it live at https://fluxo-dapp.web.app.
 
-/Important: At the moment, it only supports Ropsten network./
+/Important: At the moment, it only supports Ropsten network and TestDAI token./
 
 ** Getting Started
 
@@ -52,3 +52,12 @@ Check it live at https://fluxo-dapp.web.app.
       lein cljfmt check
       lein cljfmt fix
     #+end_src
+
+** Network
+
+   Test network handy information for development.
+
+   | Name                    | Address                                    |
+   | Ropsten Ethereum Faucet | [[https://faucet.ropsten.be/][https://faucet.ropsten.be]]                  |
+   | TestDAI (Ropsten)       | [[https://ropsten.etherscan.io/address/0x2d69ad895797c880abce92437788047ba0eb7ff6][0x2d69ad895797c880abce92437788047ba0eb7ff6]] |
+   | Sablier (Ropsten)       | [[https://ropsten.etherscan.io/address/0xc04Ad234E01327b24a831e3718DBFcbE245904CC][0xc04Ad234E01327b24a831e3718DBFcbE245904CC]] |
