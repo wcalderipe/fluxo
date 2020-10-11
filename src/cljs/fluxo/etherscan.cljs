@@ -18,5 +18,5 @@
                 :on-success      on-success}})
 
 (reg-event-fx
- :etherscan/get-contract-abi
+ ::get-contract-abi
  get-contract-abi-handler)

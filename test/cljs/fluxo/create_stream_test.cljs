@@ -4,6 +4,7 @@
             [day8.re-frame.test :refer [run-test-sync]]
             [devcards.core :as dc :refer-macros [defcard]]
             [fluxo.create-stream :as create-stream]
+            [fluxo.etherscan :as etherscan]
             [fluxo.test-helper :refer [fixture-re-frame with-mounted-component found-in]]
             [re-frame.core :as rf]))
 
@@ -35,7 +36,7 @@
 (defn- stub-etherscan [{expected-params :expected-params
                         response :response}]
   (rf/reg-event-fx
-   :etherscan/get-contract-abi
+   ::etherscan/get-contract-abi
    (fn [_ [_ params]]
      (is (= expected-params params))
      {:dispatch (conj (:on-success params) response)})))

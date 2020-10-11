@@ -3,6 +3,7 @@
   (:require [ajax.core :refer [json-request-format json-response-format]]
             [fluxo.money :refer [from-wei to-wei]]
             [fluxo.wallet :refer [mask-address]]
+            [fluxo.etherscan :as etherscan]
             [re-frame.core :refer [dispatch inject-cofx reg-event-db reg-event-fx reg-sub subscribe]]
             [reagent.core :as reagent]))
 
@@ -62,8 +63,8 @@
   {:fx [[:dispatch [:create-stream/add-amount (:amount form-state)]]
         [:dispatch [:create-stream/add-token (:token form-state)]]
         ;; TODO: Why not an effect instead?
-        [:dispatch [:etherscan/get-contract-abi {:address    (get-in form-state [:token :address])
-                                                 :on-success [:create-stream/on-token-contract-success]}]]
+        [:dispatch [::etherscan/get-contract-abi {:address    (get-in form-state [:token :address])
+                                                  :on-success [:create-stream/on-token-contract-success]}]]
         [:dispatch [:routes/redirect-to :create-stream/duration]]]})
 
 (reg-event-fx

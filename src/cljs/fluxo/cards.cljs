@@ -4,7 +4,7 @@
             [devcards.core :refer [start-devcard-ui!]]
             ;; IMPORTANT: Add here all namespaces who are defining devcards.
             [fluxo.create-stream-test]
-            [fluxo.onboarding-test]))
+            [fluxo.views.onboarding-test]))
 
 (defn ^:export init
   "Start the devcards UI."

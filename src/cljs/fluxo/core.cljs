@@ -2,11 +2,10 @@
   (:require [day8.re-frame.http-fx]
             [fluxo.config :as config]
             [fluxo.db :as db]
-            [fluxo.etherscan]
-            [fluxo.models.stream]
             [fluxo.routes :as routes]
             [fluxo.views :as views]
-            [re-frame.core :as re-frame]
+            [fluxo.wallet :as wallet]
+            [re-frame.core :as rf]
             [reagent.dom :as rdom]))
 
 (defn dev-setup []
@@ -14,13 +13,14 @@
     (println "dev mode")))
 
 (defn ^:dev/after-load mount-root []
-  (re-frame/clear-subscription-cache!)
+  (rf/clear-subscription-cache!)
   (let [root-el (.getElementById js/document "app")]
     (rdom/unmount-component-at-node root-el)
     (rdom/render [views/main-panel] root-el)))
 
 (defn init []
   (routes/start!)
-  (re-frame/dispatch-sync [:db/initialize])
+  (rf/dispatch-sync [:db/initialize])
+  (rf/dispatch-sync [::wallet/get-accounts])
   (dev-setup)
   (mount-root))

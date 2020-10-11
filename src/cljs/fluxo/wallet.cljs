@@ -1,20 +1,30 @@
 (ns fluxo.wallet
-  (:require [re-frame.core :refer [reg-sub reg-fx reg-event-db reg-event-fx dispatch]]
+  (:require [re-frame.core :as rf]
             [fluxo.web3 :as web3]))
 
 (defn mask-address
   "Omit address middle characters."
   [address]
-  (let [start (apply str (take 5 address))
-        end   (apply str (take-last 3 address))]
-    (str start "..." end)))
+  (when (not (nil? address))
+    (let [start (apply str (take 5 address))
+          end   (apply str (take-last 3 address))]
+      (str start "..." end))))
 
-(reg-sub
+
+(rf/reg-event-fx
+ ::get-accounts
+ [(rf/inject-cofx :web3/ethereum)]
+ (fn [cofx _]
+   {:wallet/request {:method     "eth_accounts"
+                     :provider   (:web3/ethereum cofx)
+                     :on-success [:wallet/accounts-received]}}))
+
+(rf/reg-sub
  :wallet/connected?
  (fn [db]
    (boolean (get-in db [:wallet :address]))))
 
-(reg-sub
+(rf/reg-sub
  :wallet/address
  (fn [db]
    (get-in db [:wallet :address])))
@@ -23,9 +33,9 @@
                    method     :method
                    provider   :provider}]
   (-> (.request provider (clj->js {:method method}))
-      (.then #(dispatch (conj on-success (js->clj % :keywordize-keys true))))))
+      (.then #(rf/dispatch (conj on-success (js->clj % :keywordize-keys true))))))
 
-(reg-fx
+(rf/reg-fx
  :wallet/request
  request-fx)
 
@@ -33,7 +43,7 @@
   {:db (-> (:db cofx)
            (assoc-in [:wallet :address] (first accounts)))})
 
-(reg-event-fx
+(rf/reg-event-fx
  :wallet/accounts-received
  accounts-received-handler)
 
@@ -44,11 +54,11 @@
                         address :address}]]
   (update-in db [:wallet :assets] conj (->Asset name symbol address)))
 
-(reg-event-db
+(rf/reg-event-db
  :wallet/add-asset
  add-asset)
 
-(reg-sub
+(rf/reg-sub
  :wallet/assets
  (fn [db]
    (get-in db [:wallet :assets])))

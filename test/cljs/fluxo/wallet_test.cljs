@@ -1,12 +1,8 @@
 (ns fluxo.wallet-test
   (:require [cljs.test :refer-macros [deftest testing is async use-fixtures]]
             [re-frame.core :as rf]
+            [fluxo.test-helper :refer [fixture-re-frame]]
             [fluxo.wallet :as wallet]))
-
-(defn fixture-re-frame []
-  (let [restore-re-frame (atom nil)]
-    {:before #(reset! restore-re-frame (rf/make-restore-fn))
-     :after  #(@restore-re-frame)}))
 
 (use-fixtures :each (fixture-re-frame))
 
