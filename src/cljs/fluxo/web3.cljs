@@ -131,7 +131,7 @@
 
 (comment
   (def test-dai-ropsten {:address      "0x2d69ad895797c880abce92437788047ba0eb7ff6"
-                         :contract-abi (.parse js/JSON (inline "ropsten_test-dai-contract-abi.json"))})
+                         :contract-abi (.parse js/JSON (inline "erc20-abi.json"))})
   (def sablier-ropsten {:address      "0xc04Ad234E01327b24a831e3718DBFcbE245904CC"
                         :contract-abi (.parse js/JSON (inline "ropsten_sablier-contract-abi.json"))})
 

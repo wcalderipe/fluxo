@@ -1,22 +1,20 @@
 (ns fluxo.models.amount-step
-  (:require [fluxo.etherscan :as etherscan]
-            [fluxo.models.create-stream :as create-stream]
+  (:require-macros [fluxo.resources :refer [inline]])
+  (:require [fluxo.models.create-stream :as create-stream]
             [fluxo.wallet :refer [mask-address]]
             [fluxo.money :refer [from-wei to-wei]]
             [re-frame.core :as rf]))
 
-(rf/reg-event-db
- ::on-token-contract-success
- (fn [db [_ response]]
-   (assoc-in db [:create-stream :token :contract-abi] response)))
+(defonce erc20-abi (.parse js/JSON (inline "erc20-abi.json")))
+
+(defn- make-token [form-state]
+  (merge (:token form-state) {:contract-abi erc20-abi}))
 
 (rf/reg-event-fx
  ::on-submit
  (fn [_ [_ form-state]]
    {:fx [[:dispatch [::create-stream/add-amount (to-wei (:amount form-state))]]
-         [:dispatch [::create-stream/add-token (:token form-state)]]
-         [:dispatch [::etherscan/get-contract-abi {:address    (get-in form-state [:token :address])
-                                                   :on-success [::on-token-contract-success]}]]
+         [:dispatch [::create-stream/add-token (make-token form-state)]]
          [:dispatch [:routes/redirect-to :create-stream/duration]]]}))
 
 (rf/reg-sub
