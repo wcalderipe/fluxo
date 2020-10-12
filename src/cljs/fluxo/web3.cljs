@@ -72,7 +72,6 @@
                               amount token-addr start-time stop-time]
   (.createStream (.. sablier -methods) recipient-addr amount token-addr start-time stop-time))
 
-
 (defn- to-bn [n]
   (.toBN web3-utils (if (= js/Number (type n)) (str n) n)))
 
@@ -102,9 +101,10 @@
         stop-time        (+ start-time (hours->secs duration))
         streamble-amount (calculate-streamble-amount start-time stop-time amount)
         tx               (make-create-stream-tx sablier recipient-addr streamble-amount token-addr start-time stop-time)]
-    (-> (.send tx #js{:from wallet-addr})
-        (.then #(dispatch (conj on-success %)))
-        (.catch #(dispatch (conj on-failure %))))))
+    (let [p (.send tx #js{:from wallet-addr})]
+      (.then p #(dispatch (conj on-success %)))
+      (when on-failure
+        (.catch p #(dispatch (conj on-failure %)))))))
 
 (reg-fx
  :web3/create-stream
@@ -121,9 +121,10 @@
         sablier-addr (:address sablier-ropsten)
         sablier      (make-contract web3 sablier-abi sablier-addr)
         tx           (make-get-stream-tx sablier stream-id)]
-    (-> (.call tx #js{:from wallet-addr})
-        (.then #(dispatch (conj on-success %)))
-        (.catch #(dispatch (conj on-failure %))))))
+    (let [p (.call tx #js{:from wallet-addr})]
+      (.then p #(dispatch (conj on-success %)))
+      (when on-failure
+        (.catch p #(dispatch (conj on-failure %)))))))
 
 (reg-fx
  :web3/get-stream
