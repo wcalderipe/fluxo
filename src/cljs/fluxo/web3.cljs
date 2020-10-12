@@ -48,11 +48,13 @@
 (defn- make-approve-tx [^js/web3.eth.Contract token spender amount]
   (.approve (.. token -methods) spender amount))
 
-(defn request-approval-fx [{:keys [provider token-addr token-abi spender-addr
-                                   amount wallet-addr on-success on-failure]}]
+(defonce erc20-abi (.parse js/JSON (inline "erc20-abi.json")))
+
+(defn request-approval-fx [{:keys [provider token-addr spender-addr amount
+                                   wallet-addr on-success on-failure]}]
   (let [web3  (make-web3 provider)
         _     (set-contract-provider! web3 provider)
-        token (make-contract web3 token-abi token-addr)
+        token (make-contract web3 erc20-abi token-addr)
         tx    (make-approve-tx token spender-addr amount)]
     (-> (.send tx #js{:from wallet-addr})
         (.then #(dispatch (conj on-success %)))

@@ -31,9 +31,8 @@
 
 (rf/reg-sub
  ::streamed-amount
- (fn []
-   [(rf/subscribe [::start-time])
-    (rf/subscribe [::rate-per-second])])
+ :<- [::start-time]
+ :<- [::rate-per-second]
  (fn [[start-time rate-per-second]]
    (let [now        (js/Math.round (/ (-> (js/Date.) .getTime) 1000))
          time-delta (bn/to-bn (- now (epoch/inst->epoch start-time)))
@@ -47,9 +46,8 @@
 
 (rf/reg-sub
  ::streamed-percentage
- (fn []
-   [(rf/subscribe [::deposit-amount])
-    (rf/subscribe [::streamed-amount])])
+ :<- [::deposit-amount]
+ :<- [::streamed-amount]
  (fn [[deposit-amount streamed-amount]]
    (let [deposit  (.parseFloat js/window deposit-amount)
          streamed (.parseFloat js/window streamed-amount)]
@@ -57,13 +55,12 @@
 
 (rf/reg-sub
  ::stream
- (fn []
-   [(rf/subscribe [::streamed-amount])
-    (rf/subscribe [::streamed-percentage])
-    (rf/subscribe [::token-symbol])
-    (rf/subscribe [::deposit-amount])
-    (rf/subscribe [::start-time])
-    (rf/subscribe [::stop-time])])
+ :<- [::streamed-amount]
+ :<- [::streamed-percentage]
+ :<- [::token-symbol]
+ :<- [::deposit-amount]
+ :<- [::start-time]
+ :<- [::stop-time]
  (fn [[streamed-amount streamed-percentage token-symbol
        deposit-amount start-time stop-time]]
    {:streamed-amount     streamed-amount

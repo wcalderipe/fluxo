@@ -14,8 +14,7 @@
 
 (rf/reg-sub
  ::onboarding
- (fn []
-   [(rf/subscribe [:wallet/address])])
+ :<- [:wallet/address]
  (fn [[address]]
    {:wallet-connected? (boolean address)
     :wallet-addr       (mask-address address)}))

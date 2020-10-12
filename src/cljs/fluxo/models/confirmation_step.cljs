@@ -3,6 +3,7 @@
   (:require [fluxo.models.create-stream :as create-stream]
             [fluxo.money :refer [from-wei]]
             [fluxo.wallet :refer [mask-address]]
+            [fluxo.stream-repository :as stream-repo]
             [re-frame.core :as rf]))
 
 (defonce sablier-ropsten {:address      "0xc04Ad234E01327b24a831e3718DBFcbE245904CC"
@@ -13,10 +14,8 @@
  [(rf/inject-cofx :web3/provider)]
  (fn [cofx [_ {:keys [token sender amount] :as stream}]]
    {:db                    (assoc (:db cofx) :loading? true)
-
     :web3/request-approval {:provider     (:web3/provider cofx)
                             :token-addr   (:address token)
-                            :token-abi    (:contract-abi token)
                             :spender-addr (:address sablier-ropsten)
                             :wallet-addr  sender
                             :amount       amount
@@ -64,7 +63,6 @@
      {:db (-> (:db cofx)
               (assoc :loading? false)
               (assoc :stream (merge stream {:token (:token create-stream)})))
-
       :web3/get-stream {:provider    (:web3/provider cofx)
                         :stream-id   (:id stream)
                         :wallet-addr (:sender-addr stream)
@@ -73,9 +71,12 @@
 (rf/reg-event-fx
  ::on-get-stream-success
  (fn [cofx [_ stream]]
-   {:db (assoc-in (:db cofx) [:stream :rate-per-second] (.. stream -ratePerSecond))
-
-    :dispatch [:routes/redirect-to :stream/details]}))
+   (let [rate-per-sec (.. stream -ratePerSecond)
+         db           (assoc-in (:db cofx) [:stream :rate-per-second] rate-per-sec)
+         stream       (:stream db)]
+     {:db                 db
+      ::stream-repo/write stream
+      :dispatch           [:routes/redirect-to :stream/details]})))
 
 (rf/reg-sub
  ::confirmation-step
