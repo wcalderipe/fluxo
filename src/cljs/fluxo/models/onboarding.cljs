@@ -14,7 +14,7 @@
 
 (rf/reg-sub
  ::onboarding
- :<- [:wallet/address]
- (fn [[address]]
-   {:wallet-connected? (boolean address)
-    :wallet-addr       (mask-address address)}))
+ (fn [db]
+   (let [address (get-in db [:wallet :address])]
+     {:wallet-connected? (boolean address)
+      :wallet-addr       (mask-address address)})))

@@ -33,8 +33,5 @@
      (testing "converts amount to ether"
        (is (= "200000000000000000000" @amount)))
 
-     (testing "adds token contract abi"
-       (is (not (nil? (:contract-abi @token)))))
-
      (testing "redirects to the amount step"
        (is (= :create-stream/duration @active-route))))))

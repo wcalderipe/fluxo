@@ -30,7 +30,7 @@
        [:button {:type :submit} "Continue"]])))
 
 (defn amount-step-component [model]
-  [:section
+  [:section#amount-step
    [:h1 "How much do you want to sent to " (:recipient-addr model) "?"]
    [amount-form model]])
 

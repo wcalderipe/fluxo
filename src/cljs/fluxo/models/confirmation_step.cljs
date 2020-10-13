@@ -2,6 +2,8 @@
   (:require-macros [fluxo.resources :refer [inline]])
   (:require [fluxo.models.create-stream :as create-stream]
             [fluxo.money :refer [from-wei]]
+            [fluxo.token :as token]
+            [fluxo.sablier :as sablier]
             [fluxo.wallet :refer [mask-address]]
             [fluxo.stream-repository :as stream-repo]
             [re-frame.core :as rf]))
@@ -14,13 +16,13 @@
  [(rf/inject-cofx :web3/provider)]
  (fn [cofx [_ {:keys [token sender amount] :as stream}]]
    {:db                    (assoc (:db cofx) :loading? true)
-    :web3/request-approval {:provider     (:web3/provider cofx)
-                            :token-addr   (:address token)
-                            :spender-addr (:address sablier-ropsten)
-                            :wallet-addr  sender
-                            :amount       amount
-                            :on-success   [::on-spend-approve-success stream] ;; todo change it
-                            :on-failure   [::on-spend-approve-failure]}})) ;; todo change it
+    ::token/approve {:provider     (:web3/provider cofx)
+                     :token-addr   (:address token)
+                     :spender-addr (:address sablier-ropsten)
+                     :wallet-addr  sender
+                     :amount       amount
+                     :on-success   [::on-spend-approve-success stream]
+                     :on-failure   [::on-spend-approve-failure]}}))
 
 (rf/reg-event-fx
  ::on-spend-approve-success
@@ -28,14 +30,14 @@
  (fn [cofx [_ stream result]]
    (js/console.log "Spend approved:" result)
    (js/console.log "Stream:" stream)
-   {:web3/create-stream {:provider       (:web3/provider cofx)
-                         :token-addr     (get-in stream [:token :address])
-                         :wallet-addr    (.. result -from)
-                         :recipient-addr (:recipient stream)
-                         :amount         (:amount stream)
-                         :duration       (:duration stream)
-                         :on-success     [::on-create-stream stream]
-                         :on-failure     [::on-create-stream]}}))
+   {::sablier/create-stream {:provider       (:web3/provider cofx)
+                             :token-addr     (get-in stream [:token :address])
+                             :wallet-addr    (.. result -from)
+                             :recipient-addr (:recipient stream)
+                             :amount         (:amount stream)
+                             :duration       (:duration stream)
+                             :on-success     [::on-create-stream stream]
+                             :on-failure     [::on-create-stream]}}))
 
 (rf/reg-event-fx
  ::on-spend-approve-failure
@@ -63,10 +65,10 @@
      {:db (-> (:db cofx)
               (assoc :loading? false)
               (assoc :stream (merge stream {:token (:token create-stream)})))
-      :web3/get-stream {:provider    (:web3/provider cofx)
-                        :stream-id   (:id stream)
-                        :wallet-addr (:sender-addr stream)
-                        :on-success  [::on-get-stream-success]}})))
+      ::sablier/get-stream {:provider    (:web3/provider cofx)
+                            :stream-id   (:id stream)
+                            :wallet-addr (:sender-addr stream)
+                            :on-success  [::on-get-stream-success]}})))
 
 (rf/reg-event-fx
  ::on-get-stream-success

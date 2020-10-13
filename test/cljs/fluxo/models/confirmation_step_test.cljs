@@ -5,6 +5,8 @@
             [devcards.core :as dc :refer-macros [deftest]]
             [fluxo.models.confirmation-step :as model]
             [fluxo.models.create-stream :as create-stream]
+            [fluxo.sablier :as sablier]
+            [fluxo.token :as token]
             [fluxo.test-helper :refer [fixture-re-frame]]
             [re-frame.core :as rf]))
 
@@ -19,11 +21,10 @@
       (assoc cofx :web3/provider :fake-provider)))
 
    (rf/reg-fx
-    :web3/request-approval
+    ::token/approve
     (fn [{:keys [token-addr token-abi
                  wallet-addr on-success on-failure] :as params}]
       (is (= "fake-token-addr" token-addr))
-      (is (= :fake-abi token-abi))
       (is (= "fake-wallet-addr" wallet-addr))
       (is (= ::model/on-spend-approve-success (first on-success)))
       (is (= ::model/on-spend-approve-failure (first on-failure)))
@@ -32,7 +33,10 @@
 
    ;; TODO: Add specs for it
    (rf/reg-fx
-    :web3/create-stream (fn [_ _])) ;; noop
+    ::sablier/create-stream (fn [_ _]))
+
+   (rf/reg-fx
+    ::sablier/get-stream (fn [_ _]))
 
    (rf/dispatch [:db/initialize])
    (rf/dispatch [:wallet/accounts-received ["fake-wallet-addr"]])
