@@ -125,7 +125,11 @@ input:focus {
   float: right;
 }
 
-#stream-details {
+#stream {
   grid-template-rows: auto auto;
   text-align: center;
+}
+
+#stream .date-time-info {
+  color: var(--color-gray);
 }

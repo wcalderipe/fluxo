@@ -17,13 +17,14 @@
                           :on-change   #(swap! state assoc :duration (.. % -target -value))}]]
        [:button {:type :submit} "Continue"]])))
 
-(defn- make-title [token-symbol amount recipient-addr]
-  (str "For how long would you like to stream " token-symbol " " amount " to " recipient-addr))
+(defn- title [token-symbol amount recipient-addr]
+  [:h1 "For how long would you like to stream "
+   [:strong token-symbol " " amount] " to " [:strong recipient-addr] "?"])
 
 (defn duration-step-component [{:keys [recipient-addr token-symbol
                                        amount duration]}]
   [:section
-   [:h1 (make-title token-symbol amount recipient-addr)]
+   [title token-symbol amount recipient-addr]
    [form duration]])
 
 (defn duration-step []

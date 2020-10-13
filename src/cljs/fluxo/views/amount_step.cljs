@@ -31,7 +31,7 @@
 
 (defn amount-step-component [model]
   [:section#amount-step
-   [:h1 "How much do you want to sent to " (:recipient-addr model) "?"]
+   [:h1 "How much do you want to sent to " [:strong (:recipient-addr model)] "?"]
    [amount-form model]])
 
 (defn amount-step []
