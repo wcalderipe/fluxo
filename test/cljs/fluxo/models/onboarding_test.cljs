@@ -4,6 +4,7 @@
             [day8.re-frame.test :refer [run-test-sync]]
             [devcards.core :as dc :refer-macros [deftest]]
             [fluxo.models.onboarding :as model]
+            [fluxo.web3 :as web3]
             [fluxo.test-helper :refer [fixture-re-frame]]
             [re-frame.core :as rf]))
 
@@ -22,11 +23,19 @@
 
    (let [onboarding (rf/subscribe [::model/onboarding])]
      (is (= {:wallet-connected? false
-             :wallet-addr       nil} @onboarding)))))
+             :wallet-addr       nil
+             :ethereum?         false} @onboarding)))))
+
+(defn- stub-ethereum-presence [{:keys [present?]}]
+  (rf/reg-event-db
+   ::web3/save-ethereum-presence
+   (fn [db]
+     (assoc-in db [:web3 :ethereum-present?] present?))))
 
 (deftest connected-wallet-test
   (run-test-sync
    (stub-web3-provider)
+
    (rf/dispatch [:db/initialize])
 
    (rf/reg-fx
@@ -44,4 +53,5 @@
      (rf/dispatch [::model/connect-wallet])
 
      (is (= {:wallet-connected? true
-             :wallet-addr       "0xfoo...bar"} @onboarding)))))
+             :wallet-addr       "0xfoo...bar"
+             :ethereum?         false} @onboarding)))))

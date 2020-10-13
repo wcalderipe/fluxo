@@ -1,8 +1,6 @@
 (ns fluxo.web3
-  (:require-macros [fluxo.resources :refer [inline]])
   (:require ["web3" :as Web3]
-            ["web3-utils" :as web3-utils]
-            [re-frame.core :refer [dispatch reg-cofx reg-fx]]))
+            [re-frame.core :as rf]))
 
 (defn ethereum!
   "Get the ethereum propery from js/window."
@@ -35,15 +33,22 @@
   (-> (.request ethereum (clj->js {:method "eth_accounts"}))
       (.then #(on-success (js->clj %)))))
 
-(reg-cofx
+(rf/reg-cofx
  :web3/ethereum
  (fn [cofx]
    (assoc cofx :web3/ethereum (ethereum!))))
 
-(reg-cofx
+(rf/reg-cofx
  :web3/provider
  (fn [cofx]
    (assoc cofx :web3/provider (given-provider))))
+
+(rf/reg-event-fx
+ ::save-ethereum-presence
+ [(rf/inject-cofx :web3/ethereum)]
+ (fn [cofx _]
+   (let [present? (boolean (:web3/ethereum cofx))]
+     {:db (assoc-in (:db cofx) [:web3 :ethereum-present?] present?)})))
 
 (comment
   ;; Request user's accounts --------------------------------------------------

@@ -15,6 +15,8 @@
 (rf/reg-sub
  ::onboarding
  (fn [db]
-   (let [address (get-in db [:wallet :address])]
+   (let [address   (get-in db [:wallet :address])
+         ethereum? (get-in db [:web3 :ethereum-present?] false)]
      {:wallet-connected? (boolean address)
-      :wallet-addr       (mask-address address)})))
+      :wallet-addr       (mask-address address)
+      :ethereum?         ethereum?})))
