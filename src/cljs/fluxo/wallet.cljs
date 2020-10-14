@@ -46,12 +46,12 @@
  :wallet/accounts-received
  accounts-received-handler)
 
-(defrecord Asset [name symbol address])
-
 (defn add-asset [db [_ {name    :name
                         symbol  :symbol
                         address :address}]]
-  (update-in db [:wallet :assets] conj (->Asset name symbol address)))
+  (update-in db [:wallet :assets] conj {:name    name
+                                        :symbol  symbol
+                                        :address address}))
 
 (rf/reg-event-db
  :wallet/add-asset

@@ -11,10 +11,10 @@
   (let [state (reagent/atom {:token  (first assets)
                              :amount amount})]
     (fn []
-      [:form#amount-step {:on-submit (fn [e]
-                                       (.preventDefault e)
-                                       (rf/dispatch [::model/on-submit @state]))}
-       [:div
+      [:form {:on-submit (fn [e]
+                           (.preventDefault e)
+                           (rf/dispatch [::model/on-submit @state]))}
+       [:div.controls
         [:label {:for :token} "Select an asset token"]
         [:select#token {:on-change #(swap! state assoc :token (filter (find-by-symbol (.. % -target -value)) assets))}
          (for [{token  :token

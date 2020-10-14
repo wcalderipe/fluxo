@@ -1,13 +1,14 @@
 (ns fluxo.models.stream
   (:require [re-frame.core :as rf]
             ["date-fns" :refer [format]]
+            ["date-fns/isAfter" :as is-after]
             ["date-fns/fromUnixTime" :as from-unix-time]
             [fluxo.bn :as bn]
             [fluxo.money :refer [from-wei]]
             [fluxo.epoch :as epoch]
             [fluxo.stream-repository :as stream-repo]))
 
-(def ^:const date-time-format "MM/dd/yyyy @ hh:mm")
+(def ^:const date-time-format "dd/MM/yyyy @ hh:mm")
 
 (rf/reg-event-db
  ::create
@@ -33,6 +34,20 @@
  ::token-symbol
  (fn [db]
    (get-in db [:stream :token :symbol])))
+
+(rf/reg-sub
+ ::status
+ (fn [db]
+   (let [now        (js/Date.)
+         start-time (from-unix-time (get-in db [:stream :start-time]))
+         started?   (is-after now start-time)
+         stop-time  (from-unix-time (get-in db [:stream :stop-time]))
+         completed? (is-after now stop-time)]
+     (cond
+       (not started?)                  :not-started
+       (and started? (not completed?)) :progress
+       (and started? completed?)       :completed
+       :else                           :not-started))))
 
 (rf/reg-sub
  ::streamed-amount
@@ -71,11 +86,13 @@
  :<- [::deposit-amount]
  :<- [::start-time]
  :<- [::stop-time]
+ :<- [::status]
  (fn [[streamed-amount streamed-percentage token-symbol
-       deposit-amount start-time stop-time]]
+       deposit-amount start-time stop-time status]]
    {:streamed-amount     streamed-amount
     :streamed-percentage (js/parseFloat streamed-percentage)
     :token-symbol        token-symbol
     :deposit-amount      (js/parseFloat deposit-amount)
     :start-time          (format-time start-time)
-    :stop-time           (format-time stop-time)}))
+    :stop-time           (format-time stop-time)
+    :status              status}))

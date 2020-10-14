@@ -1,6 +1,8 @@
 :root {
   --color-blue: #2d9cdb;
-  --color-gray: #867E7E;
+  --color-gray: #686d76;
+  --color-light-gray: #eeeeee;
+  --color-dark-gray: #373a40;
   --color-white: #ffffff;
   --color-black: #000000;
 }
@@ -33,6 +35,8 @@ section {
 section h1 {
   text-align: center;
   font-size: 1.3em;
+  font-weight: normal;
+  margin-bottom: 0;
 }
 
 button, .button {
@@ -48,6 +52,12 @@ button, .button {
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
+}
+
+button:disabled {
+  background-color: #eeeeee;
+  border-color: #686d76;
+  color: #686d76;
 }
 
 form {
@@ -73,8 +83,8 @@ input {
   padding: 0;
   box-sizing: border-box;
   border: none;
-  border-bottom: 2px dashed var(--color-gray);
-  font-size: 1.6em;
+  border-bottom: 2px dashed var(--color-light-gray);
+  font-size: 1.4em;
   margin-bottom: 1.6em;
   color: var(--color-blue);
 }
@@ -82,7 +92,7 @@ input {
 select {
   border: 0;
   background: none;
-  border-bottom: 2px dashed var(--color-gray);
+  border-bottom: 2px dashed var(--color-light-gray);
   outline: 0;
   font-size: 1.6em;
   margin-right: 1em;
@@ -106,8 +116,22 @@ input:focus {
 
 #amount-step {
   margin-bottom: 0;
-  display: inline-block;
+  grid-template-rows: auto auto;
   width: auto;
+}
+
+#amount-step form {
+  grid-template-rows: auto 35px;
+}
+
+#amount-step .controls {
+  display: grid;
+  grid-template-columns: auto auto;
+  margin-bottom: 1.6em;
+}
+
+#amount-step .controls input {
+  margin-bottom: 0;
 }
 
 #confirmation-step {

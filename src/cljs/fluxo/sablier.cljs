@@ -35,15 +35,20 @@
 
 (defn create-stream-fx [{:keys [provider wallet-addr token-addr recipient-addr
                                 amount duration on-success on-failure]}]
-  (let [web3             (web3/make-web3 provider)
-        _                (web3/set-contract-provider! web3 provider)
-        sablier-abi      (:contract-abi sablier-ropsten)
-        sablier-addr     (:address sablier-ropsten)
-        sablier          (web3/make-contract web3 sablier-abi sablier-addr)
-        start-time       (+ (now!) (hours->secs 1))
-        stop-time        (+ start-time (hours->secs duration))
-        streamble-amount (calculate-streamble-amount start-time stop-time amount)
-        tx               (make-create-stream-tx sablier recipient-addr streamble-amount token-addr start-time stop-time)]
+  (let [web3              (web3/make-web3 provider)
+        _                 (web3/set-contract-provider! web3 provider)
+        sablier-abi       (:contract-abi sablier-ropsten)
+        sablier-addr      (:address sablier-ropsten)
+        sablier           (web3/make-contract web3 sablier-abi sablier-addr)
+        start-time        (+ (now!) (* 10 60))
+        stop-time         (+ start-time (hours->secs duration))
+        streamable-amount (calculate-streamble-amount start-time stop-time amount)
+        tx                (make-create-stream-tx sablier
+                                                 recipient-addr
+                                                 streamable-amount
+                                                 token-addr
+                                                 start-time
+                                                 stop-time)]
     (let [p (.send tx #js{:from wallet-addr})]
       (.then p #(rf/dispatch (conj on-success %)))
       (when on-failure
