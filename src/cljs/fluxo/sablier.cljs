@@ -2,6 +2,7 @@
   "re-frame effects to interact with Sablier Protocol."
   (:require-macros [fluxo.resources :refer [inline]])
   (:require [fluxo.web3 :as web3]
+            [fluxo.config :refer [sablier-time-buffer]]
             ["web3-utils" :as web3-utils]
             [re-frame.core :as rf]))
 
@@ -40,7 +41,7 @@
         sablier-abi       (:contract-abi sablier-ropsten)
         sablier-addr      (:address sablier-ropsten)
         sablier           (web3/make-contract web3 sablier-abi sablier-addr)
-        start-time        (+ (now!) (* 10 60))
+        start-time        (+ (now!) sablier-time-buffer)
         stop-time         (+ start-time (hours->secs duration))
         streamable-amount (calculate-streamble-amount start-time stop-time amount)
         tx                (make-create-stream-tx sablier
