@@ -10,6 +10,10 @@
           end   (apply str (take-last 3 address))]
       (str start "..." end))))
 
+(defn listen-accounts-change [^js ethereum]
+  (when ethereum
+    (.on ethereum "accountsChanged" #(rf/dispatch [:wallet/accounts-received (js->clj %)]))))
+
 (rf/reg-event-fx
  ::get-accounts
  [(rf/inject-cofx :web3/ethereum)]

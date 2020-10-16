@@ -5,6 +5,7 @@
             [fluxo.routes :as routes]
             [fluxo.views.app :as app]
             [fluxo.web3 :as web3]
+            [fluxo.wallet :as wallet]
             [re-frame.core :as rf]
             [reagent.dom :as rdom]))
 
@@ -22,5 +23,6 @@
   (routes/start!)
   (rf/dispatch-sync [:db/initialize])
   (rf/dispatch [::web3/save-ethereum-presence])
+  (wallet/listen-accounts-change (web3/ethereum!))
   (dev-setup)
   (mount-root))
