@@ -10,6 +10,14 @@
 
 (def ^:const date-time-format "dd/MM/yyyy @ hh:mm")
 
+(rf/reg-event-fx
+ ::fetch-stream
+ [(rf/inject-cofx ::stream-repo/store)]
+ (fn [cofx _]
+   (let [stream (cofx ::stream-repo/store)]
+     (when stream
+       {:db (assoc (:db cofx) :stream stream)}))))
+
 (rf/reg-event-db
  ::create
  (fn [db [_ stream]]

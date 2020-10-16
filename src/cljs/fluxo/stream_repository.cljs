@@ -18,4 +18,9 @@
 (rf/reg-fx
  ::read
  (fn [{:keys [on-success]}]
-   (rf/dispatch (conj on-success read!))))
+   (rf/dispatch (conj on-success (read!)))))
+
+(rf/reg-cofx
+ ::store
+ (fn [cofx]
+   (assoc cofx ::store (read!))))
