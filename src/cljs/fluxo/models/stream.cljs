@@ -15,6 +15,54 @@
  (fn [db [_ stream]]
    (assoc db :stream stream)))
 
+(rf/reg-fx
+ ::interval
+ (let [live-intervals (atom {})]
+   (fn [{:keys [action id frequency event]}]
+     (if (= action :start)
+       (swap! live-intervals assoc id (js/setInterval #(rf/dispatch event) frequency))
+       (do (js/clearInterval (get @live-intervals id))
+           (swap! live-intervals dissoc id))))))
+
+(rf/reg-event-fx
+ ::start-stream-amount-calculation
+ (fn [_ _]
+   {::interval {:action    :start
+                :id        :streamed-calculation
+                :frequency 3000
+                :event     [::update-streamed-amount]}}))
+
+(rf/reg-event-fx
+ ::stop-stream-amount-calculation
+ (fn [_ _]
+   {::interval {:action :cancel
+                :id     :streamed-calculation}}))
+
+(defn- streamed-amount [rate-per-second time-delta]
+  (-> (.toString (.mul (bn/to-bn rate-per-second) time-delta))
+      from-wei))
+
+(defn- to-float [value]
+  (.parseFloat js/window (from-wei value)))
+
+(defn- streamed-percentage [deposit-amount streamed-amount]
+  (* (/ streamed-amount deposit-amount) 100))
+
+(defn- time-delta! [start-time]
+  (let [now (js/Math.round (/ (-> (js/Date.) .getTime) 1000))]
+    (bn/to-bn (- now start-time))))
+
+(rf/reg-event-db
+ ::update-streamed-amount
+ (fn [db]
+   (let [start-time      (get-in db [:stream :start-time] 0)
+         rate-per-second (get-in db [:stream :rate-per-second])
+         deposit-amount  (get-in db [:stream :deposit-amount])
+         amount          (streamed-amount rate-per-second (time-delta! start-time))
+         percentage      (streamed-percentage (to-float deposit-amount) amount)]
+     (assoc-in db [:stream :streamed] {:amount     amount
+                                       :percentage percentage}))))
+
 (rf/reg-sub
  ::start-time
  (fn [db]
@@ -50,28 +98,15 @@
        :else                           :not-started))))
 
 (rf/reg-sub
- ::streamed-amount
- :<- [::start-time]
- :<- [::rate-per-second]
- (fn [[start-time rate-per-second]]
-   (let [now        (js/Math.round (/ (-> (js/Date.) .getTime) 1000))
-         time-delta (bn/to-bn (- now start-time))
-         rate       (bn/to-bn rate-per-second)]
-     (from-wei (.toString (.mul rate time-delta))))))
+ ::streamed
+ (fn [db]
+   (get-in db [:stream :streamed] {:amount     0
+                                   :percentage 0})))
 
 (rf/reg-sub
  ::deposit-amount
  (fn [db]
    (from-wei (get-in db [:stream :deposit-amount]))))
-
-(rf/reg-sub
- ::streamed-percentage
- :<- [::deposit-amount]
- :<- [::streamed-amount]
- (fn [[deposit-amount streamed-amount]]
-   (let [deposit  (.parseFloat js/window deposit-amount)
-         streamed (.parseFloat js/window streamed-amount)]
-     (* (/ streamed deposit) 100))))
 
 (defn- format-time [time]
   (-> time
@@ -80,19 +115,17 @@
 
 (rf/reg-sub
  ::stream
- :<- [::streamed-amount]
- :<- [::streamed-percentage]
  :<- [::token-symbol]
  :<- [::deposit-amount]
  :<- [::start-time]
  :<- [::stop-time]
  :<- [::status]
- (fn [[streamed-amount streamed-percentage token-symbol
-       deposit-amount start-time stop-time status]]
-   {:streamed-amount     streamed-amount
-    :streamed-percentage (js/parseFloat streamed-percentage)
-    :token-symbol        token-symbol
+ :<- [::streamed]
+ (fn [[token-symbol deposit-amount start-time
+       stop-time status streamed]]
+   {:token-symbol        token-symbol
     :deposit-amount      (js/parseFloat deposit-amount)
     :start-time          (format-time start-time)
     :stop-time           (format-time stop-time)
-    :status              status}))
+    :status              status
+    :streamed            streamed}))

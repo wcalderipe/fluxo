@@ -16,10 +16,10 @@
   [:p.date-time-info "It started at " [:strong start-time]
    " and is expected to end at " [:strong stop-time] "."])
 
-(defn- progress [{:keys [streamed-amount streamed-percentage token-symbol
-                         deposit-amount start-time stop-time]}]
+(defn- progress [{:keys [token-symbol deposit-amount
+                         start-time stop-time streamed]}]
   [:div
-   [:p "You've streamed " [:strong streamed-amount " (" streamed-percentage "%)"]
+   [:p "You've streamed " [:strong (:amount streamed) " (" (:percentage streamed) "%)"]
     " from a total of " [:strong token-symbol " " deposit-amount] " so far."]
    [date-time-info start-time stop-time]])
 
@@ -29,6 +29,9 @@
 
 ;; TODO: Add controls to withdraw the stream at any moment.
 (defn stream-component [{:keys [status] :as model}]
+  (if (= status :progress)
+    (rf/dispatch [::model/start-stream-amount-calculation])
+    (rf/dispatch [::model/stop-stream-amount-calculation]))
   [:section#stream
    [:h1 (title status)]
    [:div
@@ -40,5 +43,4 @@
 (defn stream []
   (let [model (rf/subscribe [::model/stream])]
     (fn []
-      (js/console.log @model)
       [stream-component @model])))
