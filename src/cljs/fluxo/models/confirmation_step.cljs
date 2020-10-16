@@ -74,11 +74,17 @@
  ::on-get-stream-success
  (fn [cofx [_ stream]]
    (let [rate-per-sec (.. stream -ratePerSecond)
-         db           (assoc-in (:db cofx) [:stream :rate-per-second] rate-per-sec)
-         stream       (:stream db)]
+         db           (-> (:db cofx)
+                          (assoc-in [:stream :rate-per-second] rate-per-sec)
+                          (dissoc :create-stream))]
      {:db                 db
-      ::stream-repo/write stream
+      ::stream-repo/write (:stream db)
       :dispatch           [:routes/redirect-to :stream/details]})))
+
+(rf/reg-sub
+ ::loading?
+ (fn [db]
+   (get db :loading? false)))
 
 (rf/reg-sub
  ::confirmation-step
@@ -87,10 +93,12 @@
  :<- [::create-stream/token]
  :<- [::create-stream/amount]
  :<- [::create-stream/duration]
- (fn [[wallet-addr recipient-addr token amount duration]]
+ :<- [::loading?]
+ (fn [[wallet-addr recipient-addr token amount duration loading?]]
    {:wallet-addr    wallet-addr
     :recipient-addr recipient-addr
     :token          token
     :ether-amount   amount
     :amount         (from-wei amount)
-    :duration       duration}))
+    :duration       duration
+    :loading?       loading?}))
