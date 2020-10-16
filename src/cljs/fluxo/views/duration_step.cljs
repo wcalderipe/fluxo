@@ -11,10 +11,12 @@
                            (js/console.log @state)
                            (rf/dispatch [::model/on-submit @state]))}
        [:div
-        [:label {:for :duration} "Duration in hours"]
         [:input#duration {:type        :text
                           :value       (:duration @state)
-                          :on-change   #(swap! state assoc :duration (.. % -target -value))}]]
+                          :on-change   #(swap! state assoc :duration (.. % -target -value))}]
+
+        [:label {:for :duration} "hours"]]
+
        [:button {:type :submit} "Continue"]])))
 
 (defn- title [token-symbol amount recipient-addr]
@@ -23,7 +25,7 @@
 
 (defn duration-step-component [{:keys [recipient-addr token-symbol
                                        amount duration]}]
-  [:section
+  [:section#duration-step
    [title token-symbol amount recipient-addr]
    [form duration]])
 

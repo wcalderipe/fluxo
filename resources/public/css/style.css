@@ -134,6 +134,26 @@ input:focus {
   margin-bottom: 0;
 }
 
+#duration-step {
+  grid-template-rows: auto auto;
+}
+
+#duration-step form div {
+  display: grid;
+  grid-template-columns: auto 50px 35px auto;
+  grid-template-rows: 100%;
+}
+
+#duration-step form label[for="duration"] {
+  display: block;
+  color: var(--color-gray);
+}
+
+#duration-step form #duration {
+  grid-column-start:  2;
+  text-align: center;
+}
+
 #confirmation-step {
   grid-template-rows: auto auto 35px;
 }
