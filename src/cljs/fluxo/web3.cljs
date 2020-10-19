@@ -1,6 +1,10 @@
 (ns fluxo.web3
-  (:require ["web3" :as Web3]
+  (:require [clojure.spec.alpha :as s]
+            ["web3" :as Web3]
+            ["web3-utils" :as web3-utils]
             [re-frame.core :as rf]))
+
+(s/def ::address #(.isAddress web3-utils %))
 
 (defn ethereum!
   "Get the ethereum propery from js/window."
