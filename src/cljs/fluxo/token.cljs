@@ -76,7 +76,7 @@
         :wallet-addr wallet-addr
         :method      [:send :approve [spender-addr amount]]
         :on-success  on-success
-        ::on-failure on-failure}))
+        :on-failure  on-failure}))
 
 (rf/reg-fx ::approve approve-fx)
 
@@ -90,7 +90,7 @@
         :wallet-addr wallet-addr
         :method      [:call :balanceOf [(or addr wallet-addr)]]
         :on-success  on-success
-        ::on-failure on-failure}))
+        :on-failure  on-failure}))
 
 (rf/reg-fx ::balance-of balance-of-fx)
 
@@ -101,7 +101,7 @@
         :wallet-addr wallet-addr
         :method      [:call :name]
         :on-success  on-success
-        ::on-failure on-failure}))
+        :on-failure  on-failure}))
 
 (rf/reg-fx ::name name-fx)
 
