@@ -1,5 +1,6 @@
 (ns fluxo.web3-test
-  (:require [cljs.test :refer-macros [deftest testing is async]]
+  (:require [cljs.test :refer-macros [testing is async]]
+            [devcards.core :refer-macros [deftest]]
             [fluxo.web3 :as web3]))
 
 (deftest request-accounts-test

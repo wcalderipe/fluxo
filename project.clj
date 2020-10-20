@@ -38,7 +38,7 @@
                                :output-dir "resources/public/js/compiled"
                                :asset-path "/js/compiled"
                                :modules    {:main {:init-fn  fluxo.core/init
-                                                  :preloads [devtools.preload]}}
+                                                   :preloads [devtools.preload]}}
 
                                :devtools {:http-root "resources/public"
                                           :http-port 8280}}
@@ -51,10 +51,14 @@
                                                     :http-port 8290}}
 
                          :cards {:asset-path       "/js/compiled"
-                                 :modules          {:main {:init-fn fluxo.cards/init}}
+                                 :modules          {:main {:init-fn fluxo.cards/init
+                                                           :preloads [devtools.preload]}}
                                  :compiler-options {:devcards true}
                                  :output-dir       "resources/public/js/compiled"
-                                 :target           :browser}
+                                 :target           :browser
+                                 :devtools         {:http-root "resources/public"
+                                                    :http-port 8280}
+                                 }
 
                          :karma-test {:target    :karma
                                       :ns-regexp "-test$"

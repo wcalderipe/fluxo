@@ -1,5 +1,6 @@
 (ns fluxo.money-test
-  (:require [cljs.test :refer-macros [deftest testing is]]
+  (:require [cljs.test :refer-macros [testing is]]
+            [devcards.core :refer-macros [deftest]]
             [fluxo.money :as money]))
 
 (deftest to-wei-test

@@ -1,5 +1,6 @@
 (ns fluxo.wallet-test
-  (:require [cljs.test :refer-macros [deftest testing is async use-fixtures]]
+  (:require [cljs.test :refer-macros [testing is async use-fixtures]]
+            [devcards.core :refer-macros [deftest]]
             [re-frame.core :as rf]
             [fluxo.test-helper :refer [fixture-re-frame]]
             [fluxo.wallet :as wallet]))
