@@ -1,6 +1,6 @@
 (ns fluxo.wallet
-  (:require [re-frame.core :as rf]
-            [fluxo.web3 :as web3]))
+  (:require [fluxo.web3 :as web3]
+            [re-frame.core :as rf]))
 
 (defn mask-address
   "Omit address middle characters."

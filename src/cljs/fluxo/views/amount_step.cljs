@@ -1,11 +1,15 @@
 (ns fluxo.views.amount-step
   (:require [fluxo.models.amount-step :as model]
+            [fluxo.routes :refer [url-for]]
             [reagent.core :as reagent]
             [re-frame.core :as rf]))
 
 (defn- find-by-symbol [symbol]
   (fn [{s :symbol}]
     (= s symbol)))
+
+(defn- first-asset-by-symbol [assets symbol]
+  (first (filter (find-by-symbol symbol) assets)))
 
 (defn amount-form [{:keys [assets amount]}]
   (let [state (reagent/atom {:token  (first assets)
@@ -16,7 +20,7 @@
                            (rf/dispatch [::model/on-submit @state]))}
        [:div.controls
         [:label {:for :token} "Select an asset token"]
-        [:select#token {:on-change #(swap! state assoc :token (filter (find-by-symbol (.. % -target -value)) assets))}
+        [:select#token {:on-change #(swap! state assoc :token (first-asset-by-symbol assets (.. % -target -value)))}
          (for [{token  :token
                 symbol :symbol} assets]
            ^{:key (str name symbol)} [:option {:value symbol} symbol])]
@@ -25,7 +29,9 @@
         [:input#amount {:type      :text
                         :required  true
                         :value     (:amount @state)
-                        :on-change #(swap! state assoc :amount (.. % -target -value))}]]
+                        :on-change #(swap! state assoc :amount (.. % -target -value))}]
+
+        [:a.add-token {:href (url-for :token/new)} "Add another token"]]
 
        [:button {:type :submit} "Continue"]])))
 

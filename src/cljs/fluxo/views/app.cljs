@@ -1,5 +1,6 @@
 (ns fluxo.views.app
-  (:require [fluxo.views.amount-step :refer [amount-step]]
+  (:require [fluxo.views.add-token :refer [add-token]]
+            [fluxo.views.amount-step :refer [amount-step]]
             [fluxo.views.confirmation-step :refer [confirmation-step]]
             [fluxo.views.duration-step :refer [duration-step]]
             [fluxo.views.onboarding :refer [onboarding]]
@@ -14,6 +15,7 @@
 (defmethod panel :create-stream/amount [] [amount-step])
 (defmethod panel :create-stream/duration [] [duration-step])
 (defmethod panel :create-stream/confirmation [] [confirmation-step])
+(defmethod panel :token/new [] [add-token])
 (defmethod panel :stream/details [] [stream])
 
 (defn main-panel []

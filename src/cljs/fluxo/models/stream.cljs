@@ -5,7 +5,6 @@
             ["date-fns/fromUnixTime" :as from-unix-time]
             [fluxo.bn :as bn]
             [fluxo.money :refer [from-wei]]
-            [fluxo.epoch :as epoch]
             [fluxo.stream-repository :as stream-repo]))
 
 (def ^:const date-time-format "dd/MM/yyyy @ hh:mm")

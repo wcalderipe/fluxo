@@ -103,7 +103,6 @@ input:focus {
   outline: 0;
 }
 
-
 #onboarding {
   grid-template-rows: auto auto;
 }
@@ -127,11 +126,22 @@ input:focus {
 #amount-step .controls {
   display: grid;
   grid-template-columns: auto auto;
-  margin-bottom: 1.6em;
+  grid-gap: 1em;
 }
 
 #amount-step .controls input {
   margin-bottom: 0;
+}
+
+#amount-step .add-token {
+  color: var(--color-blue);
+  font-size: .9em;
+  text-align: right;
+  grid-column-start: 2;
+}
+
+#add-token {
+  grid-template-rows: auto auto;
 }
 
 #duration-step {
