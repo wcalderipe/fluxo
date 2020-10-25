@@ -53,5 +53,5 @@
      (rf/dispatch [::model/connect-wallet])
 
      (is (= {:wallet-connected? true
-             :wallet-addr       "0xfoo...bar"
+             :wallet-addr       "0xfoo111222bar"
              :ethereum?         false} @onboarding)))))
