@@ -53,6 +53,32 @@ Check it live at https://fluxo-dapp.web.app.
       lein cljfmt fix
     #+end_src
 
+** Integration Topology
+
+   #+begin_src plantuml :file ./docs/integration-topology.png
+     title Fluxo integration topology
+
+     ' Sets components to be a rectangle without any icon.
+     skinparam componentStyle rectangle
+
+     component "Fluxo" as fluxo
+
+     node "Blockchain" as blockchain {
+         component "Sablier Protocol" as sablier
+         component "ERC20 Token" as erc20_token
+     }
+
+     component "The Graph" as the_graph
+
+     fluxo --> erc20_token: Approval
+     fluxo --> sablier: Write stream
+     fluxo --> the_graph: Read stream
+     the_graph -> blockchain: Indexing
+   #+end_src
+
+   #+results:
+   [[file:./docs/integration-topology.png]]
+
 ** Network
 
    Test network handy information for development.
