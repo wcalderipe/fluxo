@@ -1,8 +1,8 @@
 (ns fluxo.all-tests
-  (:require [fluxo.models.add-token-test]
+  (:require [fluxo.components-test]
+            [fluxo.models.add-token-test]
             [fluxo.models.amount-step-test]
             [fluxo.models.confirmation-step-test]
-            [fluxo.models.create-stream-test]
             [fluxo.models.duration-step-test]
             [fluxo.models.onboarding-test]
             [fluxo.models.recipient-step-test]

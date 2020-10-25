@@ -103,6 +103,13 @@ input:focus {
   outline: 0;
 }
 
+.eth-address {
+  background-color: #eee;
+  padding: 0 4px;
+  border-radius: 6px;
+  color: var(--color-dark-gray);
+}
+
 #onboarding {
   grid-template-rows: auto auto;
 }
@@ -175,8 +182,18 @@ input:focus {
   font-size: 1.1em;
 }
 
+#confirmation-step li {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  margin-bottom: 6px;
+}
+
+#confirmation-step li:last-child {
+  margin-bottom: 0;
+}
+
 #confirmation-step span.value {
-  float: right;
+  text-align: right;
 }
 
 #stream {

@@ -8,7 +8,6 @@
     (fn []
       [:form {:on-submit (fn [e]
                            (.preventDefault e)
-                           (js/console.log @state)
                            (rf/dispatch [::model/on-submit @state]))}
        [:div
         [:input#duration {:type        :text

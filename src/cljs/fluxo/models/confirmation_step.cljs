@@ -2,10 +2,11 @@
   (:require-macros [fluxo.resources :refer [inline]])
   (:require [fluxo.models.create-stream :as create-stream]
             [fluxo.money :refer [from-wei]]
-            [fluxo.token :as token]
             [fluxo.sablier :as sablier]
-            [fluxo.wallet :refer [mask-address]]
             [fluxo.stream-repository :as stream-repo]
+            [fluxo.token :as token]
+            [fluxo.util :refer [ether->amount]]
+            [fluxo.wallet :refer [mask-address]]
             [re-frame.core :as rf]))
 
 (defonce sablier-ropsten {:address      "0xc04Ad234E01327b24a831e3718DBFcbE245904CC"
@@ -28,8 +29,6 @@
  ::on-spend-approve-success
  [(rf/inject-cofx :web3/provider)]
  (fn [cofx [_ stream result]]
-   (js/console.log "Spend approved:" result)
-   (js/console.log "Stream:" stream)
    {::sablier/create-stream {:provider       (:web3/provider cofx)
                              :token-addr     (get-in stream [:token :address])
                              :wallet-addr    (.. result -from)
@@ -42,7 +41,6 @@
 (rf/reg-event-fx
  ::on-spend-approve-failure
  (fn [cofx [_ reason]]
-   (js/console.warn "Spend approval declined by the user:" reason)
    {:db (assoc (:db cofx) :loading? false)}))
 
 (defn- get-returned-values [^js response]
@@ -60,7 +58,6 @@
  ::on-create-stream
  [(rf/inject-cofx :web3/provider)]
  (fn [cofx [_ create-stream response]]
-   (js/console.log "on-create-stream:" create-stream response)
    (let [stream (make-stream (get-returned-values response))]
      {:db (-> (:db cofx)
               (assoc :loading? false)
@@ -97,6 +94,6 @@
     :recipient-addr recipient-addr
     :token          token
     :ether-amount   amount
-    :amount         (from-wei amount)
+    :amount         (ether->amount amount)
     :duration       duration
     :loading?       loading?}))

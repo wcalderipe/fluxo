@@ -1,6 +1,7 @@
 (ns fluxo.views.confirmation-step
   (:require [fluxo.models.confirmation-step :as model]
             [fluxo.wallet :refer [mask-address]]
+            [fluxo.components.ethereum-address :refer [address]]
             [re-frame.core :as rf]
             [reagent.core :as reagent]))
 
@@ -15,8 +16,8 @@
   [:section#confirmation-step
    [:h1 "Review your stream"]
    [:ul
-    [:li [:span.label "From"]     [:span.value (mask-address wallet-addr)]]
-    [:li [:span.label "To"]       [:span.value (mask-address recipient-addr)]]
+    [:li [:span.label "From"]     [:span.value [address wallet-addr]]]
+    [:li [:span.label "To"]       [:span.value [address recipient-addr]]]
     [:li [:span.label "Amount"]   [:span.value (:symbol token) " " amount]]
     [:li [:span.label "Duration"] [:span.value duration " hours"]]]
    [confirm-button loading? {:sender    wallet-addr

@@ -19,10 +19,6 @@
 (defmethod panel :stream/details [] [stream])
 
 (defn main-panel []
-  (let [db           (subscribe [:db/state])
-        active-route (subscribe [:routes/active])]
+  (let [active-route (subscribe [:routes/active])]
     (fn []
-      ;; TODO: Remove the debugging log or find a way to use environment
-      ;; variables to instrument it only in development.
-      (js/console.log "db state:" @db)
       [panel @active-route])))
