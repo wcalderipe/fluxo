@@ -5,15 +5,11 @@
                                org.clojure/google-closure-library
                                org.clojure/google-closure-library-third-party]]
                  [bidi "2.1.6"]
-                 [cljs-ajax "0.8.1"]
                  [day8.re-frame/http-fx "0.2.1"]
                  [kibu/pushy "0.3.8"]
-                 [prismatic/dommy "1.1.0"]
                  [re-frame "1.1.1"]
                  [reagent "1.0.0-alpha2"]
                  [thheller/shadow-cljs "2.11.4"]
-                 [devcards "0.2.6"]
-                 [day8.re-frame/test "0.1.5"]
                  [re-graph "0.1.14"]]
 
   :plugins [[lein-shadow "0.3.1"]
@@ -38,16 +34,16 @@
                 :builds {:app {:target     :browser
                                :output-dir "resources/public/js/compiled"
                                :asset-path "/js/compiled"
+                               :modules    {:main
+                                            {:init-fn  fluxo.core/init
+                                             :preloads [devtools.preload
+                                                        re-frisk.preload]}}
+                               :devtools   {:http-root "resources/public"
+                                            :http-port 8280}
                                :dev        {:compiler-options
                                             {:closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}}}
-
-                               :modules {:main
-                                         {:init-fn  fluxo.core/init
-                                          :preloads [devtools.preload
-                                                     re-frisk.preload]}}
-
-                               :devtools {:http-root "resources/public"
-                                          :http-port 8280}}
+                               :release    {:compiler-options
+                                            {:closure-defines {"re_frame.trace.trace_enabled_QMARK_" false}}}}
 
                          :browser-test {:target    :browser-test
                                         :ns-regexp "-test$"
@@ -81,6 +77,9 @@
   :aliases {"watch"        ["with-profile" "dev" "do"
                             ["shadow" "watch" "app" "browser-test" "karma-test"]]
 
+            "app"        ["with-profile" "dev" "do"
+                          ["shadow" "watch" "app"]]
+
             "cards"        ["with-profile" "dev" "do"
                             ["shadow" "watch" "cards"]]
 
@@ -96,6 +95,8 @@
                             ["shell" "karma" "start" "--single-run" "--reporters" "junit,dots"]]}
 
   :profiles {:dev {:dependencies [[binaryage/devtools "1.0.2"]
+                                  [day8.re-frame/test "0.1.5"]
+                                  [devcards "0.2.6"]
                                   [re-frisk "1.3.4"]]
                    :source-paths ["dev"]}
 
