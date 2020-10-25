@@ -40,9 +40,6 @@ Check it live at https://fluxo-dapp.web.app.
 
     Once the build is finish, navigate to =http://localhost:8280=.
 
-    Any namespace defining Devcards must be explicitly required in [[src/cljs/fluxo/cards.cljs][cards.cljs]],
-    otherwise they won't be render on the UI.
-
 *** Linting
 
     We use [[https://github.com/weavejester/cljfmt][cljfmt]] for format Clojure(Script) code following the
@@ -53,7 +50,11 @@ Check it live at https://fluxo-dapp.web.app.
       lein cljfmt fix
     #+end_src
 
-** Integration Topology
+** Integration
+
+   [[./docs/integration-topology.png]]
+
+   *Source*
 
    #+begin_src plantuml :file ./docs/integration-topology.png
      title Fluxo integration topology
