@@ -38,8 +38,13 @@
                 :builds {:app {:target     :browser
                                :output-dir "resources/public/js/compiled"
                                :asset-path "/js/compiled"
-                               :modules    {:main {:init-fn  fluxo.core/init
-                                                   :preloads [devtools.preload]}}
+                               :dev        {:compiler-options
+                                            {:closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}}}
+
+                               :modules {:main
+                                         {:init-fn  fluxo.core/init
+                                          :preloads [devtools.preload
+                                                     re-frisk.preload]}}
 
                                :devtools {:http-root "resources/public"
                                           :http-port 8280}}
@@ -52,8 +57,9 @@
                                                     :http-port 8290}}
 
                          :cards {:asset-path       "/js/compiled"
-                                 :modules          {:main {:init-fn fluxo.cards/init
-                                                           :preloads [devtools.preload]}}
+                                 :modules          {:main
+                                                    {:init-fn  fluxo.cards/init
+                                                     :preloads [devtools.preload]}}
                                  :compiler-options {:devcards true}
                                  :output-dir       "resources/public/js/compiled"
                                  :target           :browser
@@ -89,7 +95,8 @@
                             ["shadow" "compile" "karma-test"]
                             ["shell" "karma" "start" "--single-run" "--reporters" "junit,dots"]]}
 
-  :profiles {:dev {:dependencies [[binaryage/devtools "1.0.2"]]
+  :profiles {:dev {:dependencies [[binaryage/devtools "1.0.2"]
+                                  [re-frisk "1.3.4"]]
                    :source-paths ["dev"]}
 
              :prod {}}
