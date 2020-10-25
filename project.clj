@@ -13,7 +13,8 @@
                  [reagent "1.0.0-alpha2"]
                  [thheller/shadow-cljs "2.11.4"]
                  [devcards "0.2.6"]
-                 [day8.re-frame/test "0.1.5"]]
+                 [day8.re-frame/test "0.1.5"]
+                 [re-graph "0.1.14"]]
 
   :plugins [[lein-shadow "0.3.1"]
             [lein-shell "0.5.0"]

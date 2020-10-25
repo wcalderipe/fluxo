@@ -8,7 +8,8 @@
             [fluxo.models.stream :as stream]
             [fluxo.wallet :as wallet]
             [re-frame.core :as rf]
-            [reagent.dom :as rdom]))
+            [reagent.dom :as rdom]
+            [re-graph.core :as re-graph]))
 
 (defn dev-setup []
   (when config/debug?
@@ -23,6 +24,9 @@
 (defn init []
   (routes/start!)
   (rf/dispatch-sync [:db/initialize])
+  (rf/dispatch [::re-graph/init
+                {:ws   {:url config/sablier-thegraph-ws-url}
+                 :http nil}])
   (rf/dispatch [::web3/save-ethereum-presence])
   (rf/dispatch [::stream/fetch-stream])
   (wallet/listen-accounts-change (web3/ethereum!))

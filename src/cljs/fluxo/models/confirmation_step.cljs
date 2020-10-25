@@ -65,15 +65,13 @@
      {:db (-> (:db cofx)
               (assoc :loading? false)
               (assoc :stream (merge stream {:token (:token create-stream)})))
-      ::sablier/get-stream {:provider    (:web3/provider cofx)
-                            :stream-id   (:id stream)
-                            :wallet-addr (:sender-addr stream)
-                            :on-success  [::on-get-stream-success]}})))
+      :fx [[:dispatch [::sablier/get-stream {:stream-id   (:id stream)
+                                             :on-success  [::on-get-stream-success]}]]]})))
 
 (rf/reg-event-fx
  ::on-get-stream-success
- (fn [cofx [_ stream]]
-   (let [rate-per-sec (.. stream -ratePerSecond)
+ (fn [cofx [_ response]]
+   (let [rate-per-sec (get-in response [:data :stream :ratePerSecond])
          db           (-> (:db cofx)
                           (assoc-in [:stream :rate-per-second] rate-per-sec)
                           (dissoc :create-stream))]
