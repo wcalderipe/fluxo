@@ -2,6 +2,7 @@
   (:require [re-frame.core :as rf]
             [fluxo.models.onboarding :as model]
             [fluxo.wallet :as wallet]
+            [fluxo.components.ethereum-address :refer [address]]
             [fluxo.routes :refer [url-for]]))
 
 (defn- connect-your-wallet [{on-click :on-click}]
@@ -12,7 +13,7 @@
 
 (defn- start-streaming-money [wallet-addr]
   [:div.cta
-   [:p "Your connected wallet is " wallet-addr]
+   [:p "Your connected wallet is " [address wallet-addr]]
    [:a.button {:href (url-for :create-stream/recipient)} "Create your first stream!"]])
 
 (defn- install-metamask []

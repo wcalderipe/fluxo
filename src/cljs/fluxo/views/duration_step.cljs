@@ -1,5 +1,6 @@
 (ns fluxo.views.duration-step
   (:require [fluxo.models.duration-step :as model]
+            [fluxo.components.ethereum-address :refer [address]]
             [re-frame.core :as rf]
             [reagent.core :as reagent]))
 
@@ -20,7 +21,7 @@
 
 (defn- title [token-symbol amount recipient-addr]
   [:h1 "For how long would you like to stream "
-   [:strong token-symbol " " amount] " to " [:strong recipient-addr] "?"])
+   [:strong token-symbol " " amount] " to " [:strong [address recipient-addr]] "?"])
 
 (defn duration-step-component [{:keys [recipient-addr token-symbol
                                        amount duration]}]

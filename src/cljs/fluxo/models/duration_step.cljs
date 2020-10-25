@@ -17,7 +17,7 @@
  :<- [::create-stream/amount]
  :<- [::create-stream/duration]
  (fn [[recipient-addr token amount duration]]
-   {:recipient-addr (mask-address recipient-addr)
+   {:recipient-addr recipient-addr
     :token-symbol   (:symbol token)
     :amount         (from-wei amount)
     :duration       duration}))

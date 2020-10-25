@@ -6,9 +6,9 @@
             [reagent.core :as reagent]))
 
 (defn- confirm-button [loading? stream]
-  [:button {:disabled loading?
-            :on-click (fn [e]
-                        (rf/dispatch [::model/on-submit stream]))}
+  [:button.success {:disabled loading?
+                    :on-click (fn [e]
+                                (rf/dispatch [::model/on-submit stream]))}
    (if loading? "Loading..." "Confirm")])
 
 (defn confirmation-step-component [{:keys [wallet-addr recipient-addr token
@@ -20,6 +20,7 @@
     [:li [:span.label "To"]       [:span.value [address recipient-addr]]]
     [:li [:span.label "Amount"]   [:span.value (:symbol token) " " amount]]
     [:li [:span.label "Duration"] [:span.value duration " hours"]]]
+
    [confirm-button loading? {:sender    wallet-addr
                              :recipient recipient-addr
                              :token     token

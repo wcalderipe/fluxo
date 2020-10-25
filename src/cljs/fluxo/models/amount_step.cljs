@@ -1,6 +1,5 @@
 (ns fluxo.models.amount-step
   (:require [fluxo.models.create-stream :as create-stream]
-            [fluxo.wallet :refer [mask-address]]
             [fluxo.money :refer [from-wei to-wei]]
             [re-frame.core :as rf]))
 
@@ -18,5 +17,5 @@
  :<- [::create-stream/amount]
  (fn [[assets recipient-addr amount]]
    {:assets         assets
-    :recipient-addr (mask-address recipient-addr)
+    :recipient-addr recipient-addr
     :amount         (from-wei amount)}))

@@ -1,15 +1,20 @@
 :root {
-  --color-blue: #2d9cdb;
+  --color-blue: #645DFA;
   --color-gray: #686d76;
   --color-light-gray: #eeeeee;
   --color-dark-gray: #373a40;
   --color-white: #ffffff;
-  --color-black: #000000;
+  --color-black: #363C4F;
 }
 
 html, body, form, #app {
   height: 100%;
   font-family: sans-serif;
+  color: var(--color-black);
+}
+
+html, body {
+  background-color: #D3D7FA;
 }
 
 body {
@@ -21,6 +26,10 @@ body {
 }
 
 #app {
+  background-color: #ffffff;
+  border-radius: 12px;
+  height: auto;
+  padding: 20px;
   width: 375px;
 }
 
@@ -30,33 +39,37 @@ section {
   grid-template-rows: auto 35px;
   box-sizing: border-box;
   row-gap: 1.6em;
+  background-color: #ffffff;
 }
 
 section h1 {
   text-align: center;
   font-size: 1.3em;
-  font-weight: normal;
+  font-weight: 500;
   margin-bottom: 0;
 }
 
 button, .button {
-  background: var(--color-white);
+  background: #645DFA;
   border-radius: 0.25rem;
-  border: 2px solid var(--color-black);
-  color: var(--color-black);
+  color: #ffffff;
+  border: none;
   cursor: pointer;
   font-size: 1rem;
   font-weight: bold;
-  line-height: 1.2;
+  line-height: 1.5;
   padding: 0.25rem 0.5rem;
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
 }
 
+.button.success, button.success {
+  background-color: #19C59A;
+}
+
 button:disabled {
   background-color: #eeeeee;
-  border-color: #686d76;
   color: #686d76;
 }
 
@@ -110,6 +123,11 @@ input:focus {
   color: var(--color-dark-gray);
 }
 
+section h1 .eth-address {
+  background-color: transparent;
+  padding: 0;
+}
+
 #onboarding {
   grid-template-rows: auto auto;
 }
@@ -118,6 +136,11 @@ input:focus {
   display: grid;
   grid-template-columns: 100%;
   grid-template-rows: auto 35px;
+}
+
+
+#recipient-step {
+  grid-template-rows: auto auto;
 }
 
 #amount-step {

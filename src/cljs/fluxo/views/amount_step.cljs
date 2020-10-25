@@ -1,6 +1,7 @@
 (ns fluxo.views.amount-step
   (:require [fluxo.models.amount-step :as model]
             [fluxo.routes :refer [url-for]]
+            [fluxo.components.ethereum-address :refer [address]]
             [reagent.core :as reagent]
             [re-frame.core :as rf]))
 
@@ -37,7 +38,7 @@
 
 (defn amount-step-component [model]
   [:section#amount-step
-   [:h1 "How much do you want to sent to " [:strong (:recipient-addr model)] "?"]
+   [:h1 "How much do you want to sent to " [:strong [address (:recipient-addr model)]] "?"]
    [amount-form model]])
 
 (defn amount-step []
