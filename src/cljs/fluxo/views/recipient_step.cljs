@@ -25,5 +25,5 @@
   (let [model (rf/subscribe [::model/recipient-step])]
     (fn []
       [:section
-       [:h1 "What's the Ethereum address or ENS name you want to send money to?"]
+       [:h1 "What's the Ethereum address you want to send money to?"]
        [recipient-step-component @model]])))
