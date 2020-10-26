@@ -5,7 +5,7 @@
             [fluxo.bn :as bn]
             [fluxo.money :refer [from-wei]]
             [fluxo.stream-repository :as stream-repo]
-            [fluxo.util :refer [ether->amount]]
+            [fluxo.util :refer [str->amount ether->amount]]
             [re-frame.core :as rf]))
 
 (def ^:const date-time-format "dd/MM/yyyy @ hh:mm")
@@ -66,7 +66,7 @@
    (let [start-time      (get-in db [:stream :start-time] 0)
          rate-per-second (get-in db [:stream :rate-per-second])
          deposit-amount  (get-in db [:stream :deposit-amount])
-         amount          (ether->amount (streamed-amount rate-per-second (time-delta! start-time)))
+         amount          (str->amount (streamed-amount rate-per-second (time-delta! start-time)))
          percentage      (.toFixed (streamed-percentage (to-float deposit-amount) amount) 2)]
      (assoc-in db [:stream :streamed] {:amount     amount
                                        :percentage percentage}))))
@@ -132,7 +132,7 @@
  (fn [[token-symbol deposit-amount start-time
        stop-time status streamed]]
    {:token-symbol        token-symbol
-    :deposit-amount      (ether->amount deposit-amount)
+    :deposit-amount      (str->amount deposit-amount)
     :start-time          (format-time start-time)
     :stop-time           (format-time stop-time)
     :status              status
