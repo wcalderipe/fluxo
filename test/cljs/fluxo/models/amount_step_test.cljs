@@ -17,7 +17,7 @@
    (rf/dispatch [::create-stream/add-recipient "0xfoo111bar"])
 
    (let [amount-step (rf/subscribe [::model/amount-step])]
-     (is (= "0xfoo...bar" (:recipient-addr @amount-step)))
+     (is (= "0xfoo111bar" (:recipient-addr @amount-step)))
      (is (= nil (:amount @amount-step))))))
 
 (deftest on-submit-test

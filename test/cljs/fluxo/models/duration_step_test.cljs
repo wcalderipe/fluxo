@@ -18,7 +18,7 @@
    (rf/dispatch [::create-stream/add-duration 2.5])
 
    (let [duration-step (rf/subscribe [::model/duration-step])]
-     (is (= {:recipient-addr "0xfoo...bar"
+     (is (= {:recipient-addr "0xfoo111bar"
              :token-symbol   "BAR"
              :amount         "200"
              :duration       2.5} @duration-step)))))
