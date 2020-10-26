@@ -43,10 +43,10 @@ section {
 }
 
 section h1 {
-  text-align: center;
   font-size: 1.3em;
   font-weight: 500;
-  margin-bottom: 0;
+  margin: 0;
+  text-align: center;
 }
 
 button, .button {

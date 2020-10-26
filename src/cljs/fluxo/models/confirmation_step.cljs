@@ -16,7 +16,7 @@
  ::on-submit
  [(rf/inject-cofx :web3/provider)]
  (fn [cofx [_ {:keys [token sender amount] :as stream}]]
-   {:db                    (assoc (:db cofx) :loading? true)
+   {:db             (assoc (:db cofx) :loading? true)
     ::token/approve {:provider     (:web3/provider cofx)
                      :token-addr   (:address token)
                      :spender-addr (:address sablier-ropsten)
