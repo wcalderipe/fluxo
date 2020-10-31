@@ -3,13 +3,13 @@
             [pushy.core :as pushy]
             [re-frame.core :as rf]))
 
-(def routes ["/" {""             :home
-                  "recipient"    {"" :create-stream/recipient}
-                  "amount"       {"" :create-stream/amount}
-                  "duration"     {"" :create-stream/duration}
-                  "confirmation" {"" :create-stream/confirmation}
-                  "stream"       {"" :stream/details}
-                  "token/new"    {"" :token/new}}])
+(def routes ["/" {""                           :home
+                  "create-stream/recipient"    {"" :create-stream/recipient}
+                  "create-stream/amount"       {"" :create-stream/amount}
+                  "create-stream/duration"     {"" :create-stream/duration}
+                  "create-stream/confirmation" {"" :create-stream/confirmation}
+                  "stream"                     {"" :stream/details}
+                  "token/new"                  {"" :token/new}}])
 
 (defn- dispatch-route [matched-route]
   (rf/dispatch [:routes/redirect-to (:handler matched-route)]))
