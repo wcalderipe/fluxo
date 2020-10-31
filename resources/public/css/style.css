@@ -98,7 +98,7 @@ input {
   border: none;
   border-bottom: 2px dashed var(--color-light-gray);
   font-size: 1.4em;
-  margin-bottom: 1.6em;
+  margin-bottom: .6em;
   color: var(--color-blue);
 }
 
