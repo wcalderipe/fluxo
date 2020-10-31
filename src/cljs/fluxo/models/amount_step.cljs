@@ -1,6 +1,6 @@
 (ns fluxo.models.amount-step
   (:require [fluxo.models.create-stream :as create-stream]
-            [fluxo.money :refer [from-wei to-wei]]
+            [fluxo.util :refer [from-wei to-wei]]
             [re-frame.core :as rf]))
 
 (rf/reg-event-fx

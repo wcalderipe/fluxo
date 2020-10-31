@@ -3,9 +3,8 @@
             ["date-fns/fromUnixTime" :as from-unix-time]
             ["date-fns/isAfter" :as is-after]
             [fluxo.bn :as bn]
-            [fluxo.money :refer [from-wei]]
             [fluxo.stream-repository :as stream-repo]
-            [fluxo.util :refer [str->amount ether->amount]]
+            [fluxo.util :refer [from-wei str->amount ether->amount]]
             [re-frame.core :as rf]))
 
 (def ^:const date-time-format "dd/MM/yyyy @ hh:mm")

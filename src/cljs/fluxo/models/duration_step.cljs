@@ -1,6 +1,6 @@
 (ns fluxo.models.duration-step
   (:require [fluxo.models.create-stream :as create-stream]
-            [fluxo.money :refer [from-wei]]
+            [fluxo.util :refer [from-wei]]
             [fluxo.wallet :refer [mask-address]]
             [re-frame.core :as rf]))
 

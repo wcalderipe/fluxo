@@ -92,7 +92,7 @@
                      :token-addr     (:address test-dai-ropsten)
                      :wallet-addr    wallet-addr
                      :recipient-addr recipient-addr
-                     :amount         (fluxo.money/to-wei "200")
+                     :amount         (fluxo.util/to-wei "200")
                      :duration       2
                      :on-success     [::on-create-stream]
                      :on-failure     [::on-create-stream]})

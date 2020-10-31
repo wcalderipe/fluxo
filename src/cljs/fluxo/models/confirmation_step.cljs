@@ -1,11 +1,10 @@
 (ns fluxo.models.confirmation-step
   (:require-macros [fluxo.resources :refer [inline]])
   (:require [fluxo.models.create-stream :as create-stream]
-            [fluxo.money :refer [from-wei]]
             [fluxo.sablier :as sablier]
             [fluxo.stream-repository :as stream-repo]
             [fluxo.token :as token]
-            [fluxo.util :refer [ether->amount]]
+            [fluxo.util :refer [ether->amount from-wei]]
             [fluxo.wallet :refer [mask-address]]
             [re-frame.core :as rf]))
 

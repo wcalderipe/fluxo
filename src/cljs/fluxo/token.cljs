@@ -113,21 +113,21 @@
   (rf/reg-event-fx
    ::on-approve-success
    (fn [_ [_ resp]]
-     (js/console.log (fluxo.money/from-wei resp))
+     (js/console.log (fluxo.util/from-wei resp))
      {}))
 
   (approve-fx {:provider     (web3/given-provider)
                :wallet-addr  wallet-addr
                :token-addr   "0x2d69ad895797c880abce92437788047ba0eb7ff6"
                :spender-addr "0xc04Ad234E01327b24a831e3718DBFcbE245904CC" ;; Sablier (Ropsten)
-               :amount       (fluxo.money/to-wei "200")
+               :amount       (fluxo.util/to-wei "200")
                :on-success   [::on-approve-success]})
 
   ;; Get balance --------------------------------------------------------------
   (rf/reg-event-fx
    ::on-balance-success
    (fn [_ [_ resp]]
-     (js/console.log (fluxo.money/from-wei resp))
+     (js/console.log (fluxo.util/from-wei resp))
      {}))
 
   (balance-of-fx {:provider    (web3/given-provider)

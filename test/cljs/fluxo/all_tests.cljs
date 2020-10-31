@@ -6,7 +6,7 @@
             [fluxo.models.duration-step-test]
             [fluxo.models.onboarding-test]
             [fluxo.models.recipient-step-test]
-            [fluxo.money-test]
+            [fluxo.util-test]
             [fluxo.views.add-token-test]
             [fluxo.views.amount-step-test]
             [fluxo.views.confirmation-step-test]

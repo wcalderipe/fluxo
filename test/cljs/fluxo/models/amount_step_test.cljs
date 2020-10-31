@@ -5,8 +5,8 @@
             [devcards.core :as dc :refer-macros [deftest]]
             [fluxo.models.amount-step :as model]
             [fluxo.models.create-stream :as create-stream]
-            [fluxo.money :refer [from-wei to-wei]]
             [fluxo.test-helper :refer [fixture-re-frame]]
+            [fluxo.util :refer [from-wei to-wei]]
             [re-frame.core :as rf]))
 
 (use-fixtures :each (fixture-re-frame))
