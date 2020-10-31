@@ -2,14 +2,14 @@
   (:require [day8.re-frame.http-fx]
             [fluxo.config :as config]
             [fluxo.db :as db]
+            [fluxo.models.stream :as stream]
             [fluxo.routes :as routes]
             [fluxo.views.app :as app]
-            [fluxo.web3 :as web3]
-            [fluxo.models.stream :as stream]
             [fluxo.wallet :as wallet]
+            [fluxo.web3 :as web3]
             [re-frame.core :as rf]
-            [reagent.dom :as rdom]
-            [re-graph.core :as re-graph]))
+            [re-graph.core :as re-graph]
+            [reagent.dom :as rdom]))
 
 (defn dev-setup []
   (when config/debug?
